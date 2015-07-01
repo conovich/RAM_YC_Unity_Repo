@@ -1,0 +1,10 @@
+Corey Novich,score 50,session 6
+Susan Novich,score 0,session 2
+Bruce Novich,score 25,session 2
+Spencer Novich,score 0,session 0
+Scott Novich,score 50,session 2
+Cocoa Novich,score 0,session 0
+Simon Novich,score 50,session 2
+Gromit Novich,score 0,session 0
+CNovich,score 0,session 0
+SNovich,score 0,session 0
