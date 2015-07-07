@@ -91,7 +91,7 @@ public class CameraController : MonoBehaviour {
 		Camera[] cameras = OculusRig.GetComponentsInChildren<Camera>();
 		for(int i = 0; i < cameras.Length; i++){
 			cameras[i].orthographic = false;
-			cameras[i].clearFlags = CameraClearFlags.SolidColor;
+			//cameras[i].clearFlags = CameraClearFlags.Skybox;
 		}
 	}
 }
