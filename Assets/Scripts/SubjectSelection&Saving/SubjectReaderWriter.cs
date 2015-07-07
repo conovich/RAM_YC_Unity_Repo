@@ -12,7 +12,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 	StreamReader fileReader;
 
 	//subject file
-	string subjectFile = "Assets/TextFiles/Subjects.txt";
+	string subjectFile = "TextFiles/Subjects.txt";
 	
 
 	//SINGLETON

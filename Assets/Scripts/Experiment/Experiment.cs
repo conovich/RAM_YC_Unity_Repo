@@ -15,7 +15,7 @@ public class Experiment : MonoBehaviour {
 	public CameraController cameraController;
 
 	//logging
-	private string logfile;// = "Assets/TextFiles/testLog.txt"; //TODO: specify path with config file or text field or something!
+	private string logfile;// = "TextFiles/testLog.txt"; //TODO: specify path with config file or text field or something!
 	[HideInInspector] public Logger_Threading log;
 
 	//session controller
@@ -70,7 +70,7 @@ public class Experiment : MonoBehaviour {
 		}
 		_instance = this;
 
-		logfile = "Assets/TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
+		logfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
 
 		log = GetComponent<Logger_Threading>();
 		Logger_Threading.fileName = logfile;

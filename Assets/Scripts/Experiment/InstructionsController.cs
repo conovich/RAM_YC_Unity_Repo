@@ -7,8 +7,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 
 public class InstructionsController : MonoBehaviour {
-
-	public TextAsset instructions;
+	
 	public float timePerInstruction;
 
 	public bool isFinished = false;
@@ -76,14 +75,14 @@ public class InstructionsController : MonoBehaviour {
 	public void RunInstructions(){
 		SetInstructionsColorful();
 		isFinished = false;
-		Parse (instructions);
+		Parse ();
 		StartCoroutine (DisplayReadInText ());
 	}
 
-	public void Parse(TextAsset instructionsFile){
+	public void Parse(){
 		_instructions = new List<string> ();
 
-		StreamReader reader = new StreamReader ("Assets/TextFiles/" + instructions.name + ".txt");
+		StreamReader reader = new StreamReader ("TextFiles/Instructions.txt");
 		string line = reader.ReadLine ();
 
 		string newInstruction = "";

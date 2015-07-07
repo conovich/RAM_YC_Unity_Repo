@@ -49,20 +49,26 @@ public class SubjectSelectionController : MonoBehaviour {
 	
 	void AddNewSubject() {
 		if(SubjectInputField.text != ""){ //the subject must have a name!
-			//make and add a new subject
-			Subject newSubject = new Subject( SubjectInputField.text, 0, 0 ); //should subject be its own class?
-																				//or a monobehavior to tie to the button?
-																				//or does each subject button just have a public subject variable?
-			SubjectReaderWriter.subjectDict.Add( newSubject.name, newSubject );
 
-			subjectReaderWriter.WriteNewSubject( newSubject.name );
+			//don't want a duplicate subject
+			if(!SubjectReaderWriter.subjectDict.ContainsKey( SubjectInputField.text ) ){
 
-			//now get rid of input text
-			SubjectInputField.text = "";
+				//make and add a new subject
+				Subject newSubject = new Subject( SubjectInputField.text, 0, 0 ); //should subject be its own class?
+																					//or a monobehavior to tie to the button?
+																					//or does each subject button just have a public subject variable?
+				SubjectReaderWriter.subjectDict.Add( newSubject.name, newSubject );
 
-			GameObject newSubjectButton = AddSubjectButton(newSubject.name);
+				subjectReaderWriter.WriteNewSubject( newSubject.name );
 
-			ChooseSubject(newSubjectButton.GetComponent<SubjectButton>());
+				//now get rid of input text
+				SubjectInputField.text = "";
+
+				GameObject newSubjectButton = AddSubjectButton(newSubject.name);
+
+				ChooseSubject(newSubjectButton.GetComponent<SubjectButton>());
+
+			}
 		}
 	}
 

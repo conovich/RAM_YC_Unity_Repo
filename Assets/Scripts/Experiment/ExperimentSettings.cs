@@ -16,7 +16,7 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 		get{ return _currentSubject; } 
 		set{ 
 			_currentSubject = value;
-			//fileName = "Assets/TextFiles/" + _currentSubject.name + "Log.txt";
+			//fileName = "TextFiles/" + _currentSubject.name + "Log.txt";
 		}
 	}
 	public static bool isOculus;
