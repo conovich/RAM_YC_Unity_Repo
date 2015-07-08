@@ -10,3 +10,4 @@ CNovich,score 0,session 0
 SNovich,score 0,session 0
 CNov,score 0,session 0
 Hello!,score 0,session 0
+ajw,score 100,session 3

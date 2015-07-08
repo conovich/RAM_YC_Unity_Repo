@@ -15,7 +15,7 @@ public class Experiment : MonoBehaviour {
 	public CameraController cameraController;
 
 	//logging
-	private string logfile;// = "TextFiles/testLog.txt"; //TODO: specify path with config file or text field or something!
+	private string logfile; //gets set based on the current subject in Awake()
 	[HideInInspector] public Logger_Threading log;
 
 	//session controller
@@ -196,6 +196,10 @@ public class Experiment : MonoBehaviour {
 	
 
 	public void OnExit(){ //call in scene controller when switching to another scene!
+		log.close ();
+	}
+
+	void OnApplicationQuit(){
 		log.close ();
 	}
 
