@@ -5,13 +5,196 @@ public class AvatarControls : MonoBehaviour{
 
 	Experiment exp  { get { return Experiment.Instance; } }
 
+	GameObject collisionObject;
+
 	public bool ShouldLockControls = false;
+
+
+
+	//NEW STUFF NOT PHYSICS BASED -- DIDN'T WORK FOR FRAME RATE INDEPENDENCE, ALSO MESSES UP COLLISION DETECTION. DON'T USE.
+	/*
+
+	//MOVING
+	float absMaxMoveSpeed = 1.0f;
+	float moveAccMultiplier = 2.0f; //gets multiplied by Time.deltaTime later for a slower, framerate independent acceleration
+	
+	float currentMoveSpeed = 0.0f;
+
+	//TURNING
+	float absMaxRotSpeed = 1.5f;
+	float rotAccMultiplier = 2.3f;
+
+	float currentRotSpeed = 0.0f;
+
+	// Use this for initialization
+	void Start () {
+
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		if (exp.currentState == Experiment.ExperimentState.inExperiment) {
+			if(!ShouldLockControls){
+				GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll; // TODO: on collision, don't allow a change in angular velocity?
+				
+				GetInput ();
+			}
+			else{
+				GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+			}
+		}
+	}
+	
+	void GetInput(){
+		//moving
+		float verticalAxisInput = Input.GetAxis ("Vertical");
+
+		if(verticalAxisInput > 0.01f){
+			MoveForward();
+		}
+		else if(verticalAxisInput < -0.01f){
+			MoveBackward();
+		}
+		else{
+			StopMoving();
+		}
+
+		//turning
+		float horizontalAxisInput = Input.GetAxis ("Horizontal");
+		
+		if(horizontalAxisInput > 0.01f){
+			TurnRight();
+		}
+		else if(horizontalAxisInput < -0.01f){
+			TurnLeft();
+		}
+		else{
+			StopTurning();
+		}
+	}
+
+	//MOVING
+	void MoveBackward(){
+		if(currentMoveSpeed > 0){
+			currentMoveSpeed = 0;
+		}
+
+		if(currentMoveSpeed > -absMaxMoveSpeed){
+			currentMoveSpeed -= moveAccMultiplier*Time.deltaTime;
+		}
+		
+		if(currentMoveSpeed < -absMaxMoveSpeed){
+			currentMoveSpeed = -absMaxMoveSpeed;
+		}
+		
+		Move ();
+
+	}
+	
+	void MoveForward(){
+		if(currentMoveSpeed < 0){
+			currentMoveSpeed = 0;
+		}
+
+		if(currentMoveSpeed < absMaxMoveSpeed){
+			currentMoveSpeed += moveAccMultiplier*Time.deltaTime;
+		}
+		
+		if(currentMoveSpeed > absMaxMoveSpeed){
+			currentMoveSpeed = absMaxMoveSpeed;
+		}
+		
+		Move ();
+
+	}
+
+	void Move(){
+		
+		transform.position += ( Vector3.forward * currentMoveSpeed );
+		
+	}
+	
+	void StopMoving(){
+		float moveIncrement = 2f * moveAccMultiplier * Time.deltaTime;
+		
+		if(currentMoveSpeed < 0){
+			currentMoveSpeed += moveIncrement;
+		}
+		else if(currentMoveSpeed > 0){
+			currentMoveSpeed -= moveIncrement;
+		}
+		
+		if(currentMoveSpeed >= -moveIncrement && currentMoveSpeed < moveIncrement){
+			currentMoveSpeed = 0;
+		}
+		
+		Move();
+	}
+
+
+
+	//TURNING 
+
+	void TurnLeft(){
+		if(currentRotSpeed > 0){
+			currentRotSpeed = 0;
+		}
+		
+		if(currentRotSpeed > -absMaxRotSpeed){
+			currentRotSpeed -= rotAccMultiplier*Time.deltaTime;
+		}
+		
+		if(currentRotSpeed < -absMaxRotSpeed){
+			currentRotSpeed = -absMaxMoveSpeed;
+		}
+		
+		TurnNew ();
+		
+	}
+	
+	void TurnRight(){
+		if(currentRotSpeed < 0){
+			currentRotSpeed = 0;
+		}
+		
+		if(currentRotSpeed < absMaxRotSpeed){
+			currentRotSpeed += rotAccMultiplier*Time.deltaTime;
+		}
+		
+		if(currentRotSpeed > absMaxRotSpeed){
+			currentRotSpeed = absMaxRotSpeed;
+		}
+		
+		TurnNew ();
+		
+	}
+
+	void TurnNew(){
+		transform.RotateAround( transform.position, Vector3.up, currentRotSpeed );
+	}
+
+	void StopTurning(){
+		float rotIncrement = 2f * rotAccMultiplier * Time.deltaTime;
+		
+		if(currentRotSpeed < 0){
+			currentRotSpeed += rotIncrement;
+		}
+		else if(currentRotSpeed > 0){
+			currentRotSpeed -= rotIncrement;
+		}
+		
+		if(currentRotSpeed >= -rotIncrement && currentRotSpeed < rotIncrement){
+			currentRotSpeed = 0;
+		}
+		
+		TurnNew ();
+	}
+*/
+
 
 
 	float RotationSpeed = 1;
 
-
-	GameObject collisionObject;
 
 	// Use this for initialization
 	void Start () {
@@ -40,7 +223,7 @@ public class AvatarControls : MonoBehaviour{
 	{
 		float verticalAxisInput = Input.GetAxis ("Vertical");
 
-		if ( Mathf.Abs(verticalAxisInput) > 0.03f) //for any hardware calibration errors
+		if ( Mathf.Abs(verticalAxisInput) > 0.01f) //for any hardware calibration errors
 		{
 			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input
 																											//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
@@ -53,7 +236,7 @@ public class AvatarControls : MonoBehaviour{
 
 		float horizontalAxisInput = Input.GetAxis ("Horizontal");
 
-		if (Mathf.Abs (horizontalAxisInput) > 0.0f) { //for any hardware calibration errors
+		if (Mathf.Abs (horizontalAxisInput) > 0.01f) { //for any hardware calibration errors
 
 			//Turn( horizontalAxisInput*RotationSpeed*(Time.deltaTime) ); 
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
@@ -72,11 +255,12 @@ public class AvatarControls : MonoBehaviour{
 	void Turn( float amount ){
 		transform.RotateAround (transform.position, Vector3.up, amount );
 	}
-	
+
 	void OnCollisionEnter(Collision collision){ //happens before the update loop and before the coroutine loop
 		collisionObject = collision.gameObject;
 		Debug.Log (collision.gameObject.name);
 	}
+
 
 	public IEnumerator MoveToTargetObject(GameObject target){
 
@@ -94,6 +278,8 @@ public class AvatarControls : MonoBehaviour{
 		transform.rotation = origRotation;
 		//degrees left when avatar will start moving forward while completing the turn
 		float degreesShouldMoveForward = 8.0f;
+
+
 		//SLERP THE ROTATION?
 		/*while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) > degreesShouldMoveForward){ 
 			transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 2f*Time.deltaTime);
