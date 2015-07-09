@@ -10,8 +10,6 @@ public class AvatarControls : MonoBehaviour{
 
 	float RotationSpeed = 1;
 
-	float turnIncrement = 1.0f; //in degrees
-
 
 	GameObject collisionObject;
 
@@ -24,8 +22,8 @@ public class AvatarControls : MonoBehaviour{
 	void Update () {
 		if (exp.currentState == Experiment.ExperimentState.inExperiment) {
 			if(!ShouldLockControls){
-				GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-
+				GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY; // TODO: on collision, don't allow a change in angular velocity?
+				
 				GetInput ();
 			}
 			else{
@@ -34,13 +32,18 @@ public class AvatarControls : MonoBehaviour{
 		}
 	}
 
+	void FixedUpdate(){
+
+	}
+
 	void GetInput()
 	{
 		float verticalAxisInput = Input.GetAxis ("Vertical");
 
-		if ( verticalAxisInput != 0 ) 
+		if ( Mathf.Abs(verticalAxisInput) > 0.03f) //for any hardware calibration errors
 		{
-			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed;
+			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input
+																											//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
 
 		}
 		else{
@@ -50,9 +53,14 @@ public class AvatarControls : MonoBehaviour{
 
 		float horizontalAxisInput = Input.GetAxis ("Horizontal");
 
-		if ( horizontalAxisInput != 0)
-		{
-			Turn( turnIncrement*horizontalAxisInput*RotationSpeed );
+		if (Mathf.Abs (horizontalAxisInput) > 0.0f) { //for any hardware calibration errors
+
+			//Turn( horizontalAxisInput*RotationSpeed*(Time.deltaTime) ); 
+			GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
+			Debug.Log("horizontal axis ANG VEL = " + GetComponent<Rigidbody>().angularVelocity);
+		}
+		else {
+			GetComponent<Rigidbody> ().angularVelocity = Vector3.zero * horizontalAxisInput * RotationSpeed;
 		}
 
 	}
@@ -96,15 +104,16 @@ public class AvatarControls : MonoBehaviour{
 
 		float rotationAngleDifference = transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y;
 
-		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= turnIncrement){
+		int oneDegree = 1;
+		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= oneDegree){
 			//transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, RotationSpeed*Time.deltaTime);
 
 			//make sure to take the shorter rotation
 			if((rotationAngleDifference > 0 && rotationAngleDifference < 180) || (rotationAngleDifference > -360 && rotationAngleDifference < -180)){
-				Turn (-turnIncrement);
+				Turn (-oneDegree);
 			}
 			else{
-				Turn (turnIncrement);
+				Turn (oneDegree);
 			}
 			yield return 0;
 		}

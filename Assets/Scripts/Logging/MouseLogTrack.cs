@@ -22,8 +22,11 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void LogMouse(){
+		//log the position
+		//TODO: do a check if the mouse position is out of range.
 		experimentLog.Log ("MOUSE POSITION " + Input.mousePosition.x + " " + Input.mousePosition.y);
 
+		//log a clicked object
 		if(Input.GetMouseButtonDown(0)){
 			Ray ray;
 			RaycastHit hit;
