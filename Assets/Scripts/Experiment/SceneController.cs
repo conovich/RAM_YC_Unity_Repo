@@ -61,9 +61,9 @@ public class SceneController : MonoBehaviour { //there can be a separate scene c
 			Experiment.Instance.OnExit();
 		}
 
-		if(ExperimentSettings.currentSubject != null){
-			Debug.Log("loading experiment!");
-			Application.LoadLevel(1);
+		if (ExperimentSettings.currentSubject != null || ExperimentSettings.isReplay) {
+			Debug.Log ("loading experiment!");
+			Application.LoadLevel (1);
 		}
 	}
 

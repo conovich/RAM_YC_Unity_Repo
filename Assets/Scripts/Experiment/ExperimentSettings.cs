@@ -19,9 +19,13 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 			//fileName = "TextFiles/" + _currentSubject.name + "Log.txt";
 		}
 	}
-	public static bool isOculus;
+
+	public static bool isOculus = false;
+	public static bool isPractice = false;
+	public static bool isReplay = false;
 
 	public Toggle oculusToggle; //only exists in main menu -- make sure to null check
+	public Toggle practiceToggle; //only exists in main menu -- make sure to null check
 
 
 	public Text endCongratsText;
@@ -69,6 +73,20 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 
 	public void GetCurrentSubject(){
 
+	}
+
+	public void SetReplayTrue(){
+		isReplay = true;
+	}
+
+	public void SetReplayFalse(){
+		isReplay = false;
+	}
+
+	public void SetPracticeMode(){
+		if (practiceToggle) {
+			isPractice = practiceToggle.isOn;
+		}
 	}
 
 	public void SetOculus(){
