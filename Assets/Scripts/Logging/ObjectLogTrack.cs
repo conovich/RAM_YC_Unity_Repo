@@ -26,7 +26,7 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	
 	void LogPosition(){
 		//experimentLog.log ("AVATAR POSITION: " + transform.position, Application.loadedLevel);
-		experimentLog.Log (gameObject.name + " POSITION " + transform.position);
+		experimentLog.Log (gameObject.name + " POSITION " + transform.position.x + " " + transform.position.y + " " + transform.position.z);
 	}
 	
 	void LogRotation(){
