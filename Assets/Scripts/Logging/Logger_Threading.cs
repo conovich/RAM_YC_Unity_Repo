@@ -161,9 +161,9 @@ public class LoggerWriter : ThreadedJob
 		//Debug.Log(milliseconds);
 		//Debug.Log(Time.frameCount + ": " + Event.current);
 		
-		//logfile.WriteLine( milliseconds + "\t0\t" + msg );
+		//logfile.WriteLine( milliseconds + "\t0\t" + msg ); //not sure what the "\t0\t" was for.
 
-		logfile.WriteLine (Experiment.Instance.theGameClock.SystemTime_Milliseconds + "\t0\t" + msg);
+		logfile.WriteLine (Experiment.Instance.theGameClock.SystemTime_Milliseconds + " " + msg);
 	}
 
 }
@@ -182,7 +182,7 @@ public class Logger_Threading : MonoBehaviour{
 		
 		myLoggerWriter.Start ();
 
-		myLoggerWriter.log("\nDATE: " + DateTime.Now.ToString("M/d/yyyy")); //might not be needed
+		myLoggerWriter.log("DATE: " + DateTime.Now.ToString("M/d/yyyy")); //might not be needed
 	}
 
 	public Logger_Threading(string file){

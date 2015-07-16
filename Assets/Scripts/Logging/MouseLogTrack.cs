@@ -12,13 +12,15 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!ExperimentSettings.isOculus) {
+		if (!ExperimentSettings.isOculus && ExperimentSettings.shouldLog) {
 			Log ();
 		}
 	}
 
 	public void Log(){
-		LogMouse ();
+		if (!ExperimentSettings.isReplay) {
+			LogMouse ();
+		}
 	}
 
 	void LogMouse(){

@@ -23,6 +23,7 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 	public static bool isOculus = false;
 	public static bool isPractice = false;
 	public static bool isReplay = false;
+	public static bool shouldLog = true; //if not in replay mode, should log things!
 
 	public Toggle oculusToggle; //only exists in main menu -- make sure to null check
 	public Toggle practiceToggle; //only exists in main menu -- make sure to null check
@@ -77,10 +78,12 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 
 	public void SetReplayTrue(){
 		isReplay = true;
+		shouldLog = false;
 	}
 
 	public void SetReplayFalse(){
 		isReplay = false;
+		shouldLog = true;
 	}
 
 	public void SetPracticeMode(){

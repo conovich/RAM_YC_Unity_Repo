@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+
 public class Replay : MonoBehaviour {
 
 	//GUI
@@ -19,24 +20,45 @@ public class Replay : MonoBehaviour {
 
 	//keeping track of time and objects
 	long timeElapsedMS = 0;
-	List<GameObject> currentObjectsInScene;
+	Dictionary<String, GameObject> objsInSceneDict;
 
+
+	//a bool to determine if we should start the log file processing. replay should start once 
+	static bool shouldStartProcessingLog = false;
 
 	// Use this for initialization
 	void Start () {
-		currentObjectsInScene = new List<GameObject> ();
+		objsInSceneDict = new Dictionary<String, GameObject> ();
+
+		/*if (Application.loadedLevel == 0 && LogFilePathInputField = null) { //if in the main menu and the logFilePathInputField is null (likely because
+			LogFilePathInputField = GameObject.FindGameObjectWithTag("LogFileInputField");
+		}*/
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		timeElapsedMS += (long)(Time.deltaTime * 100); //Time.deltaTime is in seconds, want to bring it into milliseconds
-
-		//ProcessLogFile ();
+		UpdateTime ();
 	}
 
-	public void ReplayScene(){
-		SetLogFile (LogFilePathInputField.text);
+	void UpdateTime(){
+		timeElapsedMS += (long)(Time.deltaTime * 100); //Time.deltaTime is in seconds, want to bring it into milliseconds
 
+
+		if (ExperimentSettings.isReplay && Application.loadedLevel == 1) { //if we're in the main scene, which in the case of YC1 corresponds to 1
+			if( shouldStartProcessingLog ){
+				//process log file;
+				Debug.Log("PROCESSING LOG FILE OH HEYYYY");
+				StartCoroutine(ProcessLogFile());
+
+				shouldStartProcessingLog = false;
+			}
+		}
+	}
+
+	public void ReplayScene(){ //gets called via replay button in the main menu scene
+		objsInSceneDict.Clear ();
+
+		SetLogFile (LogFilePathInputField.text);
 
 		try 
 		{
@@ -46,11 +68,9 @@ public class Replay : MonoBehaviour {
 			{
 				//open scene
 				ExperimentSettings.Instance.SetReplayTrue();
-				SceneController.Instance.LoadExperiment(); //TODO: make sure that the typical experiment loop doesn't happen.......
+				SceneController.Instance.LoadExperiment(); //will load the experiment scene. Experiment.cs will not run the experiment because ExperimentSettings.isReplay = true!
 				
-				//process log file;
-				Debug.Log("PROCESSING LOG FILE OH HEYYYY");
-				ProcessLogFile();
+				shouldStartProcessingLog = true;
 			}
 		}
 		catch (Exception e) 
@@ -67,19 +87,135 @@ public class Replay : MonoBehaviour {
 		Debug.Log (logFilePath);
 	}
 
-	void ProcessLogFile(){
+
+	//TODO: make log file just log the time elapsed????
+	long GetMillisecondDifference(long baseMS, long newMS){
+		return (newMS - baseMS); 
+	}
+
+
+	//THIS PARSING DEPENDS GREATLY ON THE FORMATTING OF THE LOG FILE.
+	//IF THE FORMATTING OF THE LOG FILE IS CHANGED, THIS WILL VERY LIKELY HAVE TO CHANGE AS WELL.
+	IEnumerator ProcessLogFile(){
+
+		long logFileTime = 0;
+
+
 		if (logFilePath != "") { 
 
 			fileReader = new StreamReader (logFilePath);
 		
-			currentLogFileLine = fileReader.ReadLine ();
+			currentLogFileLine = fileReader.ReadLine (); //the first line in the file should be the date.
+			currentLogFileLine = fileReader.ReadLine (); //the second line should be the first real line with logged data
+
+			string[] splitLine;
+			/*long initLogTime = 0;
+
+			if(currentLogFileLine != null){
+				splitLine = currentLogFileLine.Split(' ');
+				initLogTime = long.Parse(splitLine[0]); //the first thing on any line should be the clock time in milliseconds
+			}
+			else{
+				Debug.Log("Empty file. Cannot replay!");
+			}*/
 		
+			//PARSE
 			while (currentLogFileLine != null) {
-				//check for (1) in instructions? (2) objs in scene (incl. avatar), pos & rot
+
+				splitLine = currentLogFileLine.Split(' ');
+
+				if(splitLine.Length > 0){
+					for (int i = 0; i < splitLine.Length; i++){
+						//0 -- timestamp
+						if (i == 0){
+							//if time elapsed <= (?) logfile time elapsed... proceed...
 
 
+							//STOP BOTHERING WITH TIME FOR THE MOMENT. JUST GO FRAME FOR FRAME.
+
+							/*long currentLogfileTime = long.Parse(splitLine[0]);
+
+							//THE TIME CONDITION
+							long timeElapsedLogFile = GetMillisecondDifference( initLogTime, currentLogfileTime );
+							if ( timeElapsedMS >= timeElapsedLogFile ) { //if time elapsed is less than the log file time elapsed so far... ah this logic is a bit confusing.
+								//TIME CONDITION SATISFIED
+								//continue; //continue checking the other pieces of splitLine
+
+							}
+
+							else{
+								//TIME CONDITION NOT SATISFIED
+								break; //break out of the for loop, read the next line!
+
+							}*/
+						}
+						//1 -- name of object
+						else if (i == 1){
+							string objName = splitLine[i];
+							
+							if(objName != "Mouse" && objName != "Keyboard"){
+
+								GameObject objInScene;
+
+								if(objsInSceneDict.ContainsKey(objName)){
+									
+									objInScene = objsInSceneDict[objName];
+
+								}
+								else{
+									string currScene = Application.loadedLevelName; //TODO: dont need this anymore -- coroutine only starts in main scene.
+
+									objInScene = GameObject.Find(objName);
+
+									if(objInScene != null){
+										objsInSceneDict.Add(objName, objInScene);
+									}
+								}
+								if(objInScene != null){
+									//NOW MOVE & ROTATE THE OBJECT.
+									string loggedProperty = splitLine[i+1];
+									
+									if(loggedProperty == "POSITION"){
+										
+										float posX = float.Parse(splitLine[i+2]);
+										float posY = float.Parse(splitLine[i+3]);
+										float posZ = float.Parse(splitLine[i+4]);
+										
+										objInScene.transform.position = new Vector3(posX, posY, posZ);
+										
+									}
+									else if(loggedProperty == "ROTATION"){
+										
+										float rotX = float.Parse(splitLine[i+2]);
+										float rotY = float.Parse(splitLine[i+3]);
+										float rotZ = float.Parse(splitLine[i+4]);
+										
+										objInScene.transform.rotation.eulerAngles.Set(rotX, rotY, rotZ); //TODO: TEST THIS.
+										
+									}
+								}
+								else{
+									Debug.Log("REPLAY: No obj in scene named " + objName);
+								}
+								
+							}
+						}
+						
+						//yield return 0; //wait a frame. this should only be hit if the TIME CONDITION was satisfied, and thus all things were put in their appropriate locations for that particular time.
+
+					}
+
+
+				}
+
+				//read the next line at the end of the while loop
+				currentLogFileLine = fileReader.ReadLine ();
+
+				yield return 0;	
 			}
 		}
+
+		yield return 0;
 	}
 
 

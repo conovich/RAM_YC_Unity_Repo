@@ -1,6 +1,6 @@
 Corey Novich,score 75,session 7
 Susan Novich,score 50,session 3
-Bruce Novich,score 25,session 2
+Bruce Novich,score 75,session 5
 Spencer Novich,score 0,session 0
 Scott Novich,score 50,session 2
 Cocoa Novich,score 0,session 0

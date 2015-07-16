@@ -46,7 +46,7 @@ public class Experiment : MonoBehaviour {
 	{
 		instructionsState,
 		inExperiment,
-		inExperimentOver
+		inExperimentOver,
 	}
 
 	//bools for whether we have started the state coroutines
@@ -70,10 +70,16 @@ public class Experiment : MonoBehaviour {
 		}
 		_instance = this;
 
-		logfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
+		if (ExperimentSettings.shouldLog) {
+			logfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
 
-		log = GetComponent<Logger_Threading>();
-		Logger_Threading.fileName = logfile;
+			log = GetComponent<Logger_Threading> ();
+			Logger_Threading.fileName = logfile;
+
+		}
+		else if(ExperimentSettings.isReplay) {
+			cameraController.SetInGame(); //don't use oculus for replay mode
+		}
 
 	}
 
@@ -85,22 +91,27 @@ public class Experiment : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if(ExperimentSettings.currentSubject.session >= config.numSessions){
+		//Proceed with experiment if we're not in REPLAY mode
+		if (!ExperimentSettings.isReplay) { //REPLAY IS HANDLED IN REPLAY.CS VIA LOG FILE PARSING
 
-			StartCoroutine(RunOutOfSessions());
+			if(ExperimentSettings.currentSubject.session >= config.numSessions){
 
-		}
-		else{
-			if (currentState == ExperimentState.instructionsState && !isRunningInstructions) {
-				Debug.Log("running instructions");
-
-				StartCoroutine(RunInstructions());
+				StartCoroutine(RunOutOfSessions());
 
 			}
-			else if (currentState == ExperimentState.inExperiment && !isRunningExperiment) {
-				Debug.Log("running experiment");
-				StartCoroutine(BeginExperiment());
+			else{
+				if (currentState == ExperimentState.instructionsState && !isRunningInstructions) {
+					Debug.Log("running instructions");
+
+					StartCoroutine(RunInstructions());
+
+				}
+				else if (currentState == ExperimentState.inExperiment && !isRunningExperiment) {
+					Debug.Log("running experiment");
+					StartCoroutine(BeginExperiment());
+				}
 			}
+
 		}
 	}
 
@@ -141,6 +152,9 @@ public class Experiment : MonoBehaviour {
 	public IEnumerator BeginExperiment(){
 		isRunningExperiment = true;
 		
+		//in case instructions are still on... should perhaps make this it's own function.
+		instructionsController.SetInstructionsTransparentOverlay();
+		instructionsController.SetInstructionsBlank();
 		cameraController.SetInGame();
 
 		yield return StartCoroutine(sessionController.RunExperiment());
@@ -196,11 +210,15 @@ public class Experiment : MonoBehaviour {
 	
 
 	public void OnExit(){ //call in scene controller when switching to another scene!
-		log.close ();
+		if (ExperimentSettings.shouldLog) {
+			log.close ();
+		}
 	}
 
 	void OnApplicationQuit(){
-		log.close ();
+		if (ExperimentSettings.shouldLog) {
+			log.close ();
+		}
 	}
 
 
