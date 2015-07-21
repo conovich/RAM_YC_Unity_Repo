@@ -191,6 +191,7 @@ public class Logger_Threading : MonoBehaviour{
 		fileName = file;
 	}
 
+	//logging itself can happen in regular update. the rate at which ILoggable objects add to the log Queue should be in FixedUpdate for framerate independence.
 	void Update()
 	{
 		if (myLoggerWriter != null)

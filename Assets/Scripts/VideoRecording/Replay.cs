@@ -159,8 +159,11 @@ public class Replay : MonoBehaviour {
 										float rotX = float.Parse(splitLine[i+2]);
 										float rotY = float.Parse(splitLine[i+3]);
 										float rotZ = float.Parse(splitLine[i+4]);
-										
-										objInScene.transform.rotation.eulerAngles.Set(rotX, rotY, rotZ); //TODO: TEST THIS.
+
+										if(rotY != 0){
+											int a = 0;
+										}
+										objInScene.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ); //TODO: TEST THIS.
 										
 									}
 								}

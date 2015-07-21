@@ -12,8 +12,8 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 	
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
+	void FixedUpdate () {
 		if(ExperimentSettings.shouldLog){
 			Log ();
 		}
