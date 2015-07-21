@@ -104,6 +104,7 @@ public class Replay : MonoBehaviour {
 
 			string[] splitLine;
 
+			bool hasFinishedSettingFrame = false;
 		
 			//PARSE
 			while (currentLogFileLine != null) {
@@ -164,7 +165,11 @@ public class Replay : MonoBehaviour {
 											int a = 0;
 										}
 										objInScene.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ); //TODO: TEST THIS.
-										
+
+										//TODO: when logging more than just the avatar, the frame has only been finished if and only if:
+											//all objects have had all of their properties logged!
+										hasFinishedSettingFrame = true;
+
 									}
 								}
 								else{
@@ -182,7 +187,11 @@ public class Replay : MonoBehaviour {
 				//read the next line at the end of the while loop
 				currentLogFileLine = fileReader.ReadLine ();
 
-				yield return 0;	
+				if(hasFinishedSettingFrame){ //
+					yield return new WaitForFixedUpdate();	 //REPLAY BASED ON FIXEDUPDATE FOR FRAMERATE INDEPENDENCE (logging was also logged via FixedUpdate())
+
+					hasFinishedSettingFrame = false;
+				}
 			}
 		}
 
