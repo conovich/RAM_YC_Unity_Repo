@@ -177,12 +177,14 @@ public class Logger_Threading : MonoBehaviour{
 
 	void Start ()
 	{
-		myLoggerQueue = new LoggerQueue();
-		myLoggerWriter = new LoggerWriter (fileName, myLoggerQueue);
+		if (ExperimentSettings.shouldLog) {
+			myLoggerQueue = new LoggerQueue ();
+			myLoggerWriter = new LoggerWriter (fileName, myLoggerQueue);
 		
-		myLoggerWriter.Start ();
+			myLoggerWriter.Start ();
 
-		myLoggerWriter.log("DATE: " + DateTime.Now.ToString("M/d/yyyy")); //might not be needed
+			myLoggerWriter.log ("DATE: " + DateTime.Now.ToString ("M/d/yyyy")); //might not be needed
+		}
 	}
 
 	public Logger_Threading(string file){

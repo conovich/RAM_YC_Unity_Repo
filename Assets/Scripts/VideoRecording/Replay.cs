@@ -18,8 +18,7 @@ public class Replay : MonoBehaviour {
 	string currentLogFileLine;
 
 
-	//keeping track of time and objects
-	long timeElapsedMS = 0;
+	//keeping track of objects
 	Dictionary<String, GameObject> objsInSceneDict;
 
 
@@ -37,19 +36,13 @@ public class Replay : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		UpdateTime ();
-	}
-
-	void UpdateTime(){
-		timeElapsedMS += (long)(Time.deltaTime * 100); //Time.deltaTime is in seconds, want to bring it into milliseconds
-
 
 		if (ExperimentSettings.isReplay && Application.loadedLevel == 1) { //if we're in the main scene, which in the case of YC1 corresponds to 1
 			if( shouldStartProcessingLog ){
 				//process log file;
 				Debug.Log("PROCESSING LOG FILE OH HEYYYY");
 				StartCoroutine(ProcessLogFile());
-
+				
 				shouldStartProcessingLog = false;
 			}
 		}
@@ -58,8 +51,11 @@ public class Replay : MonoBehaviour {
 	public void ReplayScene(){ //gets called via replay button in the main menu scene
 		objsInSceneDict.Clear ();
 
-		SetLogFile (LogFilePathInputField.text);
+		if (LogFilePathInputField != null) {
+			SetLogFile (LogFilePathInputField.text);
+		}
 
+		
 		try 
 		{
 			// Create an instance of StreamReader to read from a file. 
@@ -77,7 +73,7 @@ public class Replay : MonoBehaviour {
 		{
 			Debug.Log("Invalid log file path. Cannot replay.");
 		}
-
+		
 
 
 	}
@@ -98,8 +94,6 @@ public class Replay : MonoBehaviour {
 	//IF THE FORMATTING OF THE LOG FILE IS CHANGED, THIS WILL VERY LIKELY HAVE TO CHANGE AS WELL.
 	IEnumerator ProcessLogFile(){
 
-		long logFileTime = 0;
-
 
 		if (logFilePath != "") { 
 
@@ -109,15 +103,7 @@ public class Replay : MonoBehaviour {
 			currentLogFileLine = fileReader.ReadLine (); //the second line should be the first real line with logged data
 
 			string[] splitLine;
-			/*long initLogTime = 0;
 
-			if(currentLogFileLine != null){
-				splitLine = currentLogFileLine.Split(' ');
-				initLogTime = long.Parse(splitLine[0]); //the first thing on any line should be the clock time in milliseconds
-			}
-			else{
-				Debug.Log("Empty file. Cannot replay!");
-			}*/
 		
 			//PARSE
 			while (currentLogFileLine != null) {
@@ -126,28 +112,10 @@ public class Replay : MonoBehaviour {
 
 				if(splitLine.Length > 0){
 					for (int i = 0; i < splitLine.Length; i++){
+
 						//0 -- timestamp
 						if (i == 0){
-							//if time elapsed <= (?) logfile time elapsed... proceed...
 
-
-							//STOP BOTHERING WITH TIME FOR THE MOMENT. JUST GO FRAME FOR FRAME.
-
-							/*long currentLogfileTime = long.Parse(splitLine[0]);
-
-							//THE TIME CONDITION
-							long timeElapsedLogFile = GetMillisecondDifference( initLogTime, currentLogfileTime );
-							if ( timeElapsedMS >= timeElapsedLogFile ) { //if time elapsed is less than the log file time elapsed so far... ah this logic is a bit confusing.
-								//TIME CONDITION SATISFIED
-								//continue; //continue checking the other pieces of splitLine
-
-							}
-
-							else{
-								//TIME CONDITION NOT SATISFIED
-								break; //break out of the for loop, read the next line!
-
-							}*/
 						}
 						//1 -- name of object
 						else if (i == 1){
@@ -182,6 +150,8 @@ public class Replay : MonoBehaviour {
 										float posZ = float.Parse(splitLine[i+4]);
 										
 										objInScene.transform.position = new Vector3(posX, posY, posZ);
+
+										Debug.Log(objInScene.transform.position);
 										
 									}
 									else if(loggedProperty == "ROTATION"){
@@ -200,8 +170,6 @@ public class Replay : MonoBehaviour {
 								
 							}
 						}
-						
-						//yield return 0; //wait a frame. this should only be hit if the TIME CONDITION was satisfied, and thus all things were put in their appropriate locations for that particular time.
 
 					}
 

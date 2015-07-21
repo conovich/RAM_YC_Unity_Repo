@@ -18,9 +18,7 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	public void Log(){
-		if (!ExperimentSettings.isReplay) {
-			LogMouse ();
-		}
+		LogMouse ();
 	}
 
 	void LogMouse(){

@@ -19,21 +19,24 @@ public class SessionController : MonoBehaviour {
 
 	//FILL THIS IN DEPENDING ON EXPERIMENT SPECIFICATIONS
 	public IEnumerator RunExperiment(){
+		if (!ExperimentSettings.isReplay) {
+			//show instructions for exploring
+			yield return StartCoroutine (exp.ShowSingleInstruction ("Use the arrow keys to explore the environment. When finished exploring, press the button.", true));
 		
-		//show instructions for exploring
-		yield return StartCoroutine(exp.ShowSingleInstruction("Use the arrow keys to explore the environment. When finished exploring, press the button.", true));
-		
-		//let player explore
-		yield return StartCoroutine(exp.WaitForActionButton());
+			//let player explore
+			yield return StartCoroutine (exp.WaitForActionButton ());
 		
 		
-		//execute the number of sessions
-		int sessionCount = ExperimentSettings.currentSubject.session;
-		Debug.Log("starting session at: " + sessionCount);
-		while (sessionCount < exp.config.numSessions) {
-			sessionCount++;
-			yield return StartCoroutine(RunSession());
+			//execute the number of sessions
+			int sessionCount = ExperimentSettings.currentSubject.session;
+			Debug.Log ("starting session at: " + sessionCount);
+			while (sessionCount < exp.config.numSessions) {
+				sessionCount++;
+				yield return StartCoroutine (RunSession ());
+			}
 		}
+
+		yield return 0;
 
 	}
 
