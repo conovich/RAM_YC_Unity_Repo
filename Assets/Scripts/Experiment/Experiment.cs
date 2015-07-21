@@ -78,6 +78,7 @@ public class Experiment : MonoBehaviour {
 
 		}
 		else if(ExperimentSettings.isReplay) {
+			instructionsController.TurnOffInstructions();
 			cameraController.SetInGame(); //don't use oculus for replay mode
 		}
 
@@ -153,8 +154,7 @@ public class Experiment : MonoBehaviour {
 		isRunningExperiment = true;
 		
 		//in case instructions are still on... should perhaps make this it's own function.
-		instructionsController.SetInstructionsTransparentOverlay();
-		instructionsController.SetInstructionsBlank();
+		instructionsController.TurnOffInstructions ();
 		cameraController.SetInGame();
 
 		yield return StartCoroutine(sessionController.RunExperiment());
@@ -190,8 +190,7 @@ public class Experiment : MonoBehaviour {
 		instructionsController.DisplayText(line);
 		yield return StartCoroutine(WaitForActionButton());
 
-		instructionsController.SetInstructionsTransparentOverlay();
-		instructionsController.SetInstructionsBlank();
+		instructionsController.TurnOffInstructions ();
 		cameraController.SetInGame();
 	}
 	

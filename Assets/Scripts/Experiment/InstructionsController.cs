@@ -33,6 +33,11 @@ public class InstructionsController : MonoBehaviour {
 	
 	}
 
+	public void TurnOffInstructions(){
+		SetInstructionsTransparentOverlay();
+		SetInstructionsBlank();
+	}
+
 	void SetText(string newText){
 		if(ExperimentSettings.isOculus){
 			oculusText.text = newText;
