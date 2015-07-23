@@ -47,11 +47,7 @@ public class SessionController : MonoBehaviour {
 		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
 
 		GameObject newObject = exp.objectController.SpawnRandomObject();
-		string newObjectName = newObject.name;
-
-		//Debug.Log("orig name: " + name);
-		newObjectName = Regex.Replace( newObjectName, "(Clone)", "" );
-		newObjectName = Regex.Replace( newObjectName, "[()]", "" );
+		string newObjectName = newObject.GetComponent<SpawnableObject>().GetName();
 		
 		//show instruction for "press the button to be driven to the OBJECT_NAME".
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
@@ -77,23 +73,8 @@ public class SessionController : MonoBehaviour {
 		//HIDE OBJECT
 
 		//turn off visuals of object
-		if(newObject.GetComponent<Renderer>() != null){
-			newObject.GetComponent<Renderer>().enabled = false;
-		}
-		Renderer[] newObjectRenderers = newObject.GetComponentsInChildren<Renderer>();
-		for(int i = 0; i < newObjectRenderers.Length; i++){
-			newObjectRenderers[i].enabled = false;
-		}
-		
-		
-		//turn off all colliders of an object
-		if(newObject.GetComponent<Collider>() != null){
-			newObject.GetComponent<Collider>().enabled = false;
-		}
-		Collider[] newObjectColliders = newObject.GetComponentsInChildren<Collider>();
-		for(int i = 0; i < newObjectColliders.Length; i++){
-			newObjectColliders[i].enabled = false;
-		}
+		SpawnableObject newSpawnedObject = newObject.GetComponent<SpawnableObject> ();
+		newSpawnedObject.TurnVisible (false); //important function to turn off the object without setting it inactive -- because we want to keep logging on
 
 		//show instruction for "the OBJECT_NAME is now hidden. you will now drive to the OBJECT_NAME on your own."
 		//+"Press the button to continue, and then drive to the locaiton of the cactus and press the button when you are in the correct location."

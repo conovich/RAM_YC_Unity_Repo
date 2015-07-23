@@ -132,12 +132,19 @@ public class Replay : MonoBehaviour {
 
 								}
 								else{
-									string currScene = Application.loadedLevelName; //TODO: dont need this anymore -- coroutine only starts in main scene.
 
 									objInScene = GameObject.Find(objName);
 
 									if(objInScene != null){
 										objsInSceneDict.Add(objName, objInScene);
+									}
+									else{ //if the object is not in the scene, but is in the log file, we should instantiate it!
+										objInScene = Experiment.Instance.objectController.ChooseSpawnableObject(objName);
+										if(objInScene != null){
+											objInScene = Experiment.Instance.objectController.SpawnObject(objInScene, Vector3.zero); //position and rotation should be set next...
+
+											objsInSceneDict.Add(objName, objInScene);
+										}
 									}
 								}
 								if(objInScene != null){
@@ -161,9 +168,6 @@ public class Replay : MonoBehaviour {
 										float rotY = float.Parse(splitLine[i+3]);
 										float rotZ = float.Parse(splitLine[i+4]);
 
-										if(rotY != 0){
-											int a = 0;
-										}
 										objInScene.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ); //TODO: TEST THIS.
 
 										//TODO: when logging more than just the avatar, the frame has only been finished if and only if:

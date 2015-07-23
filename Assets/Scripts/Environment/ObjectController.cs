@@ -12,7 +12,8 @@ public class ObjectController : MonoBehaviour {
 	Experiment experiment { get { return Experiment.Instance; } }
 
 	//object array & list
-	List<GameObject> gameObjectList;
+	List<GameObject> gameObjectList_Spawnable;
+	//List<GameObject> gameObjectList_Spawned; //a list to keep track of the objects currently in the scene
 
 	//TODO: incorporate into random spawning so that two objects don't spawn in super similar locations consecutively
 	Vector3 lastSpawnPos;
@@ -20,7 +21,9 @@ public class ObjectController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		CreateObjectList ();
+		gameObjectList_Spawnable = new List<GameObject> ();
+
+		CreateObjectList (gameObjectList_Spawnable);
 		lastSpawnPos = experiment.avatar.transform.position;
 	}
 	
@@ -29,27 +32,52 @@ public class ObjectController : MonoBehaviour {
 	
 	}
 
-	void CreateObjectList(){
-		gameObjectList = new List<GameObject>();
+	void CreateObjectList(List<GameObject> gameObjectListToFill){
+		gameObjectListToFill.Clear();
 		Object[] prefabs = Resources.LoadAll("Prefabs/Objects");
 		for (int i = 0; i < prefabs.Length; i++) {
-			gameObjectList.Add((GameObject)prefabs[i]);
+			gameObjectListToFill.Add((GameObject)prefabs[i]);
 		}
+	}
+
+	void CreateSpawnableList (List<SpawnableObject> spawnableListToFill){
+		spawnableListToFill.Clear();
+		Object[] prefabs = Resources.LoadAll("Prefabs/Objects");
+		for (int i = 0; i < prefabs.Length; i++) {
+			SpawnableObject spawnable = ( (GameObject)prefabs[i] ).GetComponent<SpawnableObject>();
+			spawnableListToFill.Add(spawnable);
+		}
+	}
+
+	public GameObject ChooseSpawnableObject(string objectName){
+		List<SpawnableObject> allSpawnables = new List<SpawnableObject>(); //note: this is technically getting instantiated twice now... as it's instantiated in CREATE as well.
+		CreateSpawnableList (allSpawnables);
+
+		for (int i = 0; i < allSpawnables.Count; i++) {
+			if(allSpawnables[i].GetName() == objectName){
+				return allSpawnables[i].gameObject;
+			}
+		}
+		return null;
 	}
 
 
 	GameObject ChooseRandomObject(){
-		if (gameObjectList.Count == 0) {
-			Debug.Log ("No more objects to pick!");
-			return null;
+		if (gameObjectList_Spawnable.Count == 0) {
+			Debug.Log ("No MORE objects to pick! Recreating object list.");
+			CreateObjectList(gameObjectList_Spawnable); //IN ORDER TO REFILL THE LIST ONCE ALL OBJECTS HAVE BEEN USED
+			if(gameObjectList_Spawnable.Count == 0){
+				Debug.Log ("No objects to pick at all!"); //if there are still no objects in the list, then there weren't any to begin with...
+				return null;
+			}
 		}
-		else{
-			int randomObjectIndex = Random.Range(0, gameObjectList.Count);
-			GameObject chosenObject = gameObjectList[randomObjectIndex];
-			gameObjectList.RemoveAt(randomObjectIndex);
-			
-			return chosenObject;
-		}
+
+
+		int randomObjectIndex = Random.Range(0, gameObjectList_Spawnable.Count);
+		GameObject chosenObject = gameObjectList_Spawnable[randomObjectIndex];
+		gameObjectList_Spawnable.RemoveAt(randomObjectIndex);
+		
+		return chosenObject;
 	}
 	
 	//FROM CONFIG FILE, FOR REFERENCE
@@ -176,9 +204,11 @@ public class ObjectController : MonoBehaviour {
 
 
 	//for more generic object spawning
-	public void SpawnObject( GameObject objToSpawn, Vector3 spawnPos ){
+	public GameObject SpawnObject( GameObject objToSpawn, Vector3 spawnPos ){
 		lastSpawnPos = spawnPos;
-		Instantiate(objToSpawn, spawnPos, objToSpawn.transform.rotation);
+		GameObject spawnedObj = Instantiate(objToSpawn, spawnPos, objToSpawn.transform.rotation) as GameObject;
+
+		return spawnedObj;
 	}
 
 	//for spawning a random object at a random location
