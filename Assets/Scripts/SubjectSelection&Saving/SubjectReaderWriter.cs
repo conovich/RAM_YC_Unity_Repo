@@ -70,8 +70,6 @@ public class SubjectReaderWriter : MonoBehaviour {
 				//add to the subject list!
 				subjectDict.Add(newSubject.name, newSubject);
 
-				Debug.Log(newSubject.name + " " + newSubject.score + " " + newSubject.session);
-
 			}
 			line = fileReader.ReadLine();
 		}

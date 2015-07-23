@@ -28,10 +28,6 @@ public class Replay : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		objsInSceneDict = new Dictionary<String, GameObject> ();
-
-		/*if (Application.loadedLevel == 0 && LogFilePathInputField = null) { //if in the main menu and the logFilePathInputField is null (likely because
-			LogFilePathInputField = GameObject.FindGameObjectWithTag("LogFileInputField");
-		}*/
 	}
 	
 	// Update is called once per frame
@@ -158,8 +154,6 @@ public class Replay : MonoBehaviour {
 										float posZ = float.Parse(splitLine[i+4]);
 										
 										objInScene.transform.position = new Vector3(posX, posY, posZ);
-
-										Debug.Log(objInScene.transform.position);
 										
 									}
 									else if(loggedProperty == "ROTATION"){
@@ -195,6 +189,7 @@ public class Replay : MonoBehaviour {
 					yield return new WaitForFixedUpdate();	 //REPLAY BASED ON FIXEDUPDATE FOR FRAMERATE INDEPENDENCE (logging was also logged via FixedUpdate())
 
 					hasFinishedSettingFrame = false;
+
 				}
 			}
 		}
