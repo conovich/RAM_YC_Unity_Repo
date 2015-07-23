@@ -11,6 +11,8 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 
 	// Use this for initialization
 	void Start () {
+
+		//NOTE: be wary of logging objects with the same name. might be an issue for things like replaying the scene.
 		spawnedObj = GetComponent<SpawnableObject> ();
 		if (spawnedObj != null) {
 			nameToLog = spawnedObj.GetName (); //important, because otherwise the logged name will have "(Clone)" attached to it.
