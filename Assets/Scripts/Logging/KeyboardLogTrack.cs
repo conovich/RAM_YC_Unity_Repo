@@ -28,7 +28,7 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 		for (int i = 0; i < Keys.Length; i++) {
 			keyName = Keys[i];
 			if (Input.GetKey (keyName.ToLower())) {
-				experimentLog.Log ("Keyboard " + keyName);
+				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Keyboard " + keyName);
 			}
 		}
 	}

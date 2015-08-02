@@ -89,7 +89,7 @@ public class Replay : MonoBehaviour {
 	//THIS PARSING DEPENDS GREATLY ON THE FORMATTING OF THE LOG FILE.
 	//IF THE FORMATTING OF THE LOG FILE IS CHANGED, THIS WILL VERY LIKELY HAVE TO CHANGE AS WELL.
 	IEnumerator ProcessLogFile(){
-
+		long currentFrame = 0;
 
 		if (logFilePath != "") { 
 
@@ -166,7 +166,7 @@ public class Replay : MonoBehaviour {
 
 										//TODO: when logging more than just the avatar, the frame has only been finished if and only if:
 											//all objects have had all of their properties logged!
-										hasFinishedSettingFrame = true;
+										//hasFinishedSettingFrame = true;
 
 									}
 								}
@@ -174,6 +174,17 @@ public class Replay : MonoBehaviour {
 									Debug.Log("REPLAY: No obj in scene named " + objName);
 								}
 								
+							}
+						}
+
+						else if(i == 6){ //fixed update frame count
+							long newFrame = long.Parse(splitLine[6]);
+							if(newFrame != currentFrame){
+								currentFrame = newFrame;
+								hasFinishedSettingFrame = true;
+
+
+								Debug.Log(currentFrame);
 							}
 						}
 
@@ -186,7 +197,8 @@ public class Replay : MonoBehaviour {
 				currentLogFileLine = fileReader.ReadLine ();
 
 				if(hasFinishedSettingFrame){ //
-					yield return new WaitForFixedUpdate();	 //REPLAY BASED ON FIXEDUPDATE FOR FRAMERATE INDEPENDENCE (logging was also logged via FixedUpdate())
+					//yield return new WaitForFixedUpdate();	 //REPLAY BASED ON FIXEDUPDATE FOR FRAMERATE INDEPENDENCE (logging was also logged via FixedUpdate())
+					yield return 0; //WHILE LOGGED ON FIXED UPDATE, REPLAY ON UPDATE TO GET A CONSTANT #RENDERED FRAMES
 
 					hasFinishedSettingFrame = false;
 

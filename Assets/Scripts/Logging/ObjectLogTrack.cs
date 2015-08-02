@@ -37,16 +37,16 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	}
 	
 	void LogPosition(){
-		experimentLog.Log (nameToLog + " POSITION " + transform.position.x + " " + transform.position.y + " " + transform.position.z);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " POSITION " + transform.position.x + " " + transform.position.y + " " + transform.position.z);
 	}
 	
 	void LogRotation(){
-		experimentLog.Log (nameToLog + " ROTATION " + transform.rotation.eulerAngles.x + " " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " ROTATION " + transform.rotation.eulerAngles.x + " " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
 	}
 
 	void LogVisibility(){
 		if (spawnedObj != null) {
-			experimentLog.Log (nameToLog + " VISIBILITY " + spawnedObj.isVisible);
+			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " VISIBILITY " + spawnedObj.isVisible);
 		}
 	}
 

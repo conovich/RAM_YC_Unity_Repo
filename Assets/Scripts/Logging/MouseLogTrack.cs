@@ -24,7 +24,7 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 	void LogMouse(){
 		//log the position
 		//TODO: do a check if the mouse position is out of range.
-		experimentLog.Log ("Mouse POSITION " + Input.mousePosition.x + " " + Input.mousePosition.y);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Mouse POSITION " + Input.mousePosition.x + " " + Input.mousePosition.y);
 
 		//log a clicked object
 		if(Input.GetMouseButtonDown(0)){
@@ -33,10 +33,10 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 			if(Camera.main != null){
 				ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 				if(Physics.Raycast(ray, out hit)){
-					experimentLog.Log("Mouse CLICKED " + hit.collider.gameObject);
+					experimentLog.Log(Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Mouse CLICKED " + hit.collider.gameObject);
 				}
 				else{
-					experimentLog.Log("Mouse CLICKED " + "EMPTY");
+					experimentLog.Log(Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Mouse CLICKED " + "EMPTY");
 				}
 			}
 			else{

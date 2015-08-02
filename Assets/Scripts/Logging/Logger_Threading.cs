@@ -163,7 +163,7 @@ public class LoggerWriter : ThreadedJob
 		
 		//logfile.WriteLine( milliseconds + "\t0\t" + msg ); //not sure what the "\t0\t" was for.
 
-		logfile.WriteLine (Experiment.Instance.theGameClock.SystemTime_Milliseconds + " " + msg);
+		logfile.WriteLine (msg);
 	}
 
 }
@@ -171,6 +171,9 @@ public class LoggerWriter : ThreadedJob
 public class Logger_Threading : MonoBehaviour{
 	LoggerQueue myLoggerQueue;
 	LoggerWriter myLoggerWriter;
+
+	long frameCount;
+	long fixedUpdateFrameCount;
 
 	//protected static string fileName;
 	public static string fileName;
@@ -191,9 +194,14 @@ public class Logger_Threading : MonoBehaviour{
 		fileName = file;
 	}
 
+	void FixedUpdate(){
+		fixedUpdateFrameCount++;
+	}
+
 	//logging itself can happen in regular update. the rate at which ILoggable objects add to the log Queue should be in FixedUpdate for framerate independence.
 	void Update()
 	{
+		frameCount++;
 		if (myLoggerWriter != null)
 		{
 			if (myLoggerWriter.Update())
@@ -205,9 +213,9 @@ public class Logger_Threading : MonoBehaviour{
 	}
 
 
-	public void Log( string newLogInfo){
+	public void Log(long timeLogged, string newLogInfo){
 		if (myLoggerQueue != null) {
-			myLoggerQueue.AddToLogQueue (newLogInfo);
+			myLoggerQueue.AddToLogQueue (timeLogged + " " + newLogInfo+ " " + fixedUpdateFrameCount);
 		}
 	}
 
