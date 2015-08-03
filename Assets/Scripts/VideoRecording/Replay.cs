@@ -164,10 +164,23 @@ public class Replay : MonoBehaviour {
 
 										objInScene.transform.rotation = Quaternion.Euler(rotX, rotY, rotZ); //TODO: TEST THIS.
 
-										//TODO: when logging more than just the avatar, the frame has only been finished if and only if:
-											//all objects have had all of their properties logged!
-										//hasFinishedSettingFrame = true;
-
+									}
+									else if(loggedProperty == "VISIBILITY"){
+										SpawnableObject spawnedObj = objInScene.GetComponent<SpawnableObject>();
+										if(spawnedObj != null){
+											bool visibleState = true;
+											if(splitLine[i+2] == "false"){
+												visibleState = false;
+											}
+											spawnedObj.TurnVisible(visibleState);
+										}
+										else{
+											Debug.Log("no spawnable object!");
+										}
+									}
+									else if(loggedProperty == "DESTROYED"){
+										Debug.Log("Destroying object! " + objInScene.name);
+										GameObject.Destroy(objInScene);
 									}
 								}
 								else{

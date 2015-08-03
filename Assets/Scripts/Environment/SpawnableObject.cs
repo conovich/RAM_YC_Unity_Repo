@@ -22,6 +22,7 @@ public class SpawnableObject : MonoBehaviour {
 		if(GetComponent<Renderer>() != null){
 			GetComponent<Renderer>().enabled = shouldBeVisible;
 		}
+
 		Renderer[] renderers = GetComponentsInChildren<Renderer>();
 		for(int i = 0; i < renderers.Length; i++){
 			renderers[i].enabled = shouldBeVisible;

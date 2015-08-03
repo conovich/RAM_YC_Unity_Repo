@@ -20,6 +20,10 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 		else {
 			nameToLog = gameObject.name;
 		}
+
+		if (ExperimentSettings.shouldLog) {
+			LogSpawned();
+		}
 	}
 	
 	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
@@ -34,8 +38,13 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	{
 		LogPosition();
 		LogRotation();
+		LogVisibility();
 	}
-	
+
+	void LogSpawned(){
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " SPAWNED ");
+	}
+
 	void LogPosition(){
 		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " POSITION " + transform.position.x + " " + transform.position.y + " " + transform.position.z);
 	}
@@ -43,10 +52,20 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	void LogRotation(){
 		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " ROTATION " + transform.rotation.eulerAngles.x + " " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
 	}
-
+	
 	void LogVisibility(){
 		if (spawnedObj != null) {
 			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " VISIBILITY " + spawnedObj.isVisible);
+		}
+	}
+
+	void LogDestroy(){
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " DESTROYED ");
+	}
+
+	void OnDestroy(){
+		if (ExperimentSettings.shouldLog) {
+			LogDestroy();
 		}
 	}
 
