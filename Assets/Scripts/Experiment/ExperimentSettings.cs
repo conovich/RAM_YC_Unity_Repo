@@ -23,11 +23,11 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 	public static bool isOculus = false;
 	public static bool isPractice = false;
 	public static bool isReplay = false;
-	public static bool shouldLog = true; //if not in replay mode, should log things!
+	public static bool shouldLog = true; //if not in replay mode, should log things! or can be toggled off in main menu.
 
 	public Toggle oculusToggle; //only exists in main menu -- make sure to null check
 	public Toggle practiceToggle; //only exists in main menu -- make sure to null check
-
+	public Toggle loggingToggle; //only exists in main menu -- make sure to null check
 
 	public Text endCongratsText;
 	public Text endScoreText;
@@ -79,11 +79,25 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 	public void SetReplayTrue(){
 		isReplay = true;
 		shouldLog = false;
+		loggingToggle.isOn = false;
 	}
 
 	public void SetReplayFalse(){
 		isReplay = false;
-		shouldLog = true;
+		//shouldLog = true;
+	}
+
+	public void SetLogging(){
+		if(isReplay){
+			shouldLog = false;
+		}
+		else{
+			if(loggingToggle){
+				shouldLog = loggingToggle.isOn;
+				Debug.Log("should log?: " + shouldLog);
+			}
+		}
+
 	}
 
 	public void SetPracticeMode(){

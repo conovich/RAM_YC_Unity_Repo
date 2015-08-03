@@ -21,6 +21,7 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 			nameToLog = gameObject.name;
 		}
 
+		//log that object was spawned
 		if (ExperimentSettings.shouldLog) {
 			LogSpawned();
 		}
