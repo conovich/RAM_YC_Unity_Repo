@@ -30,14 +30,19 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 		//log that object was spawned
 		if (ExperimentSettings.shouldLog) {
 			LogSpawned();
+			Log (); //need to log pos/rot/etc. on the first frame too
 		}
 	}
-	
-	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
-	void FixedUpdate () {
+
+	void Update(){
 		if (ExperimentSettings.shouldLog) {
 			Log ();
 		}
+	}
+
+	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
+	void FixedUpdate () {
+
 	}
 
 
@@ -49,25 +54,25 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void LogSpawned(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " SPAWNED ");
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + "," + "SPAWNED");
 	}
 
 	void LogPosition(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " POSITION " + transform.position.x + " " + transform.position.y + " " + transform.position.z);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + ",POSITION," + transform.position.x + "," + transform.position.y + "," + transform.position.z);
 	}
 	
 	void LogRotation(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " ROTATION " + transform.rotation.eulerAngles.x + " " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + ",ROTATION," + transform.rotation.eulerAngles.x + "," + transform.rotation.eulerAngles.y + "," + transform.rotation.eulerAngles.z);
 	}
 	
 	void LogVisibility(){
 		if (spawnedObj != null) {
-			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " VISIBILITY " + spawnedObj.isVisible);
+			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + ",VISIBILITY," + spawnedObj.isVisible);
 		}
 	}
 
 	void LogDestroy(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + " DESTROYED ");
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, nameToLog + ",DESTROYED");
 	}
 
 	void OnDestroy(){

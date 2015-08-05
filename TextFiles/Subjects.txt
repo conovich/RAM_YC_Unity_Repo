@@ -1,12 +1,6 @@
-Corey Novich,score 75,session 7
-Susan Novich,score 50,session 3
-Bruce Novich,score 75,session 5
-Spencer Novich,score 0,session 2
-Scott Novich,score 50,session 2
+Corey Novich,score 0,session 0
+Susan Novich,score 0,session 0
+Bruce Novich,score 0,session 0
+Spencer Novich,score 25,session 1
+Scott Novich,score 0,session 0
 Cocoa Novich,score 0,session 0
-Simon Novich,score 50,session 2
-Gromit Novich,score 0,session 0
-CNovich,score 0,session 0
-SNovich,score 0,session 0
-CNov,score 0,session 0
-Hello!,score 0,session 0

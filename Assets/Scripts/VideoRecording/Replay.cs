@@ -119,7 +119,7 @@ public class Replay : MonoBehaviour {
 			//PARSE
 			while (currentLogFileLine != null) {
 
-				splitLine = currentLogFileLine.Split(' ');
+				splitLine = currentLogFileLine.Split(',');
 
 				if(splitLine.Length > 0){
 					for (int i = 0; i < splitLine.Length; i++){
@@ -143,7 +143,6 @@ public class Replay : MonoBehaviour {
 						}
 						//2 -- name of object
 						else if (i == 2){
-
 							string objName = splitLine[i];
 							
 							if(objName != "Mouse" && objName != "Keyboard"){
@@ -198,13 +197,29 @@ public class Replay : MonoBehaviour {
 										SpawnableObject spawnedObj = objInScene.GetComponent<SpawnableObject>();
 										if(spawnedObj != null){
 											bool visibleState = true;
-											if(splitLine[i+2] == "false"){
+											if(splitLine[i+2] == "false" || splitLine[i+2] == "False"){
 												visibleState = false;
 											}
 											spawnedObj.TurnVisible(visibleState);
 										}
 										else{
 											Debug.Log("no spawnable object!");
+										}
+									}
+									else if(loggedProperty == "DESTROYED"){
+										Debug.Log("Destroying object! " + objInScene.name);
+										GameObject.Destroy(objInScene);
+									}
+
+									else if(loggedProperty == "CAMERA_ENABLED"){
+										Camera objCamera = objInScene.GetComponent<Camera>();
+										if(objCamera != null){
+											if(splitLine[i+2] == "true" || splitLine[i+2] == "True"){
+												objCamera.enabled = true;
+											}
+											else{
+												objCamera.enabled = false;
+											}
 										}
 									}
 									else if(loggedProperty == "DESTROYED"){

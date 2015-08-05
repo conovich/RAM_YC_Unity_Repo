@@ -11,12 +11,16 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 	void Start () {
 	
 	}
-	
-	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
-	void FixedUpdate () {
+
+	void Update(){
 		if(ExperimentSettings.shouldLog){
 			Log ();
 		}
+	}
+
+	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
+	void FixedUpdate () {
+
 	}
 
 	public void Log(){
@@ -28,7 +32,7 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 		for (int i = 0; i < Keys.Length; i++) {
 			keyName = Keys[i];
 			if (Input.GetKey (keyName.ToLower())) {
-				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Keyboard " + keyName);
+				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, "Keyboard," + keyName);
 			}
 		}
 	}
