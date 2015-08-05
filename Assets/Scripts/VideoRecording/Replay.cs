@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 public class Replay : MonoBehaviour {
 
+	//image recording
+	public ScreenRecorder MyScreenRecorder;
+
 	//GUI
 	public InputField LogFilePathInputField;
 
@@ -85,10 +88,21 @@ public class Replay : MonoBehaviour {
 		return (newMS - baseMS); 
 	}
 
-
+	void RecordScreenShot(){
+		if(MyScreenRecorder != null){
+			//will check if it's supposed to record or not
+			//also will wait until endofframe in order to take the shot
+			MyScreenRecorder.TakeNextContinuousScreenShot();
+		}
+		else{
+			Debug.Log("No screen recorder attached!");
+		}
+	}
+	
 	//THIS PARSING DEPENDS GREATLY ON THE FORMATTING OF THE LOG FILE.
 	//IF THE FORMATTING OF THE LOG FILE IS CHANGED, THIS WILL VERY LIKELY HAVE TO CHANGE AS WELL.
 	IEnumerator ProcessLogFile(){
+
 		long currentFrame = 0;
 
 		if (logFilePath != "") { 
@@ -114,8 +128,22 @@ public class Replay : MonoBehaviour {
 						if (i == 0){
 
 						}
-						//1 -- name of object
-						else if (i == 1){
+						else if(i == 1){
+							long readFrame = long.Parse(splitLine[i]);
+							while(readFrame != currentFrame){
+								currentFrame++;
+								hasFinishedSettingFrame = true;
+
+								RecordScreenShot();
+
+								yield return 0;
+
+								Debug.Log(currentFrame);
+							}
+						}
+						//2 -- name of object
+						else if (i == 2){
+
 							string objName = splitLine[i];
 							
 							if(objName != "Mouse" && objName != "Keyboard"){
@@ -135,6 +163,7 @@ public class Replay : MonoBehaviour {
 										objsInSceneDict.Add(objName, objInScene);
 									}
 									else{ //if the object is not in the scene, but is in the log file, we should instantiate it!
+											//we could also check for the SPAWNED keyword
 										objInScene = Experiment.Instance.objectController.ChooseSpawnableObject(objName);
 										if(objInScene != null){
 											objInScene = Experiment.Instance.objectController.SpawnObject(objInScene, Vector3.zero); //position and rotation should be set next...
@@ -190,17 +219,6 @@ public class Replay : MonoBehaviour {
 							}
 						}
 
-						else if(i == 6){ //fixed update frame count
-							long newFrame = long.Parse(splitLine[6]);
-							if(newFrame != currentFrame){
-								currentFrame = newFrame;
-								hasFinishedSettingFrame = true;
-
-
-								Debug.Log(currentFrame);
-							}
-						}
-
 					}
 
 
@@ -219,8 +237,10 @@ public class Replay : MonoBehaviour {
 			}
 		}
 
+		//take the last screenshot
+		RecordScreenShot();
 		yield return 0;
+		Application.LoadLevel(0); //return to main menu
 	}
-
 
 }

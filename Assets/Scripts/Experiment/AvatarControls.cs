@@ -198,7 +198,13 @@ public class AvatarControls : MonoBehaviour{
 
 	// Use this for initialization
 	void Start () {
-
+		//when in replay, we don't want physics collision interfering with anything
+		if(ExperimentSettings.isReplay){
+			GetComponent<Collider>().enabled = false;
+		}
+		else{
+			GetComponent<Collider>().enabled = true;
+		}
 	}
 	
 	// Update is called once per frame

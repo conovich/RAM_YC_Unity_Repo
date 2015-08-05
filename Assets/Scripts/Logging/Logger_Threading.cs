@@ -173,7 +173,7 @@ public class Logger_Threading : MonoBehaviour{
 	LoggerWriter myLoggerWriter;
 
 	long frameCount;
-	long fixedUpdateFrameCount;
+	//long fixedUpdateFrameCount;
 
 	//protected static string fileName;
 	public static string fileName;
@@ -195,7 +195,7 @@ public class Logger_Threading : MonoBehaviour{
 	}
 
 	void FixedUpdate(){
-		fixedUpdateFrameCount++;
+	//	fixedUpdateFrameCount++;
 	}
 
 	//logging itself can happen in regular update. the rate at which ILoggable objects add to the log Queue should be in FixedUpdate for framerate independence.
@@ -215,7 +215,7 @@ public class Logger_Threading : MonoBehaviour{
 
 	public void Log(long timeLogged, string newLogInfo){
 		if (myLoggerQueue != null) {
-			myLoggerQueue.AddToLogQueue (timeLogged + " " + newLogInfo+ " " + fixedUpdateFrameCount);
+			myLoggerQueue.AddToLogQueue (timeLogged + " " + frameCount + " " + newLogInfo);
 		}
 	}
 
