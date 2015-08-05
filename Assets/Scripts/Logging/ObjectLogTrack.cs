@@ -9,6 +9,12 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	SpawnableObject spawnedObj;
 	string nameToLog;
 
+	//if we want to only log objects when something has changed... should start with keep track of last positions/rotations.
+	//or I could set up some sort of a delegate system.
+	//Vector3 lastPosition;
+	//Vector3 lastRotation;
+	//bool lastVisibility;
+
 	// Use this for initialization
 	void Start () {
 
