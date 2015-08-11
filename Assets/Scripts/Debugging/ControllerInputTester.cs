@@ -10,6 +10,10 @@ public class ControllerInputTester : MonoBehaviour {
 	
 	//COMMENTS ARE FOR LOGITECH CONTROLLER
 	void Update () {
+
+		//DPAD -- X & Y Axes
+
+
 		//3rd axis
 		if(Input.GetAxis("HorizontalLeftJoystick") > 0){
 			Debug.Log("HEYO HORIZONTAL POS");

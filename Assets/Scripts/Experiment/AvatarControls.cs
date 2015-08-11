@@ -229,10 +229,9 @@ public class AvatarControls : MonoBehaviour{
 	{
 		float verticalAxisInput = Input.GetAxis ("Vertical");
 
-		if ( Mathf.Abs(verticalAxisInput) > 0.01f) //for any hardware calibration errors
-		{
-			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input
-																											//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
+		if ( Mathf.Abs(verticalAxisInput) > 0.0f) { //EPSILON should be accounted for in Input Settings "dead zone" parameter
+
+			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input																								//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
 
 		}
 		else{
@@ -242,7 +241,7 @@ public class AvatarControls : MonoBehaviour{
 
 		float horizontalAxisInput = Input.GetAxis ("Horizontal");
 
-		if (Mathf.Abs (horizontalAxisInput) > 0.01f) { //for any hardware calibration errors
+		if (Mathf.Abs (horizontalAxisInput) > 0.0f) { //EPSILON should be accounted for in Input Settings "dead zone" parameter
 
 			//Turn( horizontalAxisInput*RotationSpeed*(Time.deltaTime) ); 
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
