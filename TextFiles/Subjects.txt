@@ -1,5 +1,5 @@
 Corey Novich,score 0,session 0
-Susan Novich,score 0,session 0
+Susan Novich,score 50,session 1
 Bruce Novich,score 0,session 0
 Spencer Novich,score 50,session 2
 Scott Novich,score 0,session 0
