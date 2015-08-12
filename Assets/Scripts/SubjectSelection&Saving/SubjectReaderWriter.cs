@@ -90,8 +90,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 
 	//have to re-write entire file -- highly non-trivial to edit a single line of the file
 	public void RecordSubjects(){
-		//if(Application.loadedLevelName == "EndMenu" && ExperimentSettings.currentSubject != null){ //if NOT in end screen and no current subject --> implies testing 
-		if( ExperimentSettings.currentSubject != null ){ //do write as each session is completed.
+		if( ExperimentSettings.currentSubject != null && !ExperimentSettings.isReplay ){ //do write as each session is completed.
 
 			fileWriter = new StreamWriter ( subjectFile, false ); //will overwrite file
 		

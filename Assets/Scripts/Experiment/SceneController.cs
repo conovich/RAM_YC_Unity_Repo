@@ -29,13 +29,13 @@ public class SceneController : MonoBehaviour { //there can be a separate scene c
 	}
 
 	void GetShortcutInput(){
-		if(Input.GetKeyDown(KeyCode.Alpha0)){
+		if(Input.GetKeyDown(KeyCode.P)){
 			LoadMainMenu();
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha1)){
+		else if (Input.GetKeyDown(KeyCode.Q)){
 			LoadExperiment();
 		}
-		else if (Input.GetKeyDown(KeyCode.Alpha2)){
+		else if (Input.GetKeyDown(KeyCode.E)){
 			LoadEndMenu();
 		}
 	}

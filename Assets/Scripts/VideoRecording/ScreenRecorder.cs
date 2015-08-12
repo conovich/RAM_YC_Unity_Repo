@@ -5,8 +5,7 @@ using UnityEngine.Events;
 
 public class ScreenRecorder : MonoBehaviour {
 	public InputField RecordingPathInputField;
-
-	static bool isRecording;
+	
 	static string path = "";
 	
 	int numFrames = 0;
@@ -19,10 +18,6 @@ public class ScreenRecorder : MonoBehaviour {
 	void Start(){
 		//timeBetweenFrames = 1.0f / (float)framesPerSecond;
 		SetRecordPath ("");
-	}
-
-	public void SetIsRecording(bool shouldRecord){
-		isRecording = shouldRecord;
 	}
 
 	public void SetRecordPath(string emptyString){ //the emptyString variable is a hack and not used because I'm having trouble getting the darn InputField to pass it's value to a function T_T
@@ -42,9 +37,7 @@ public class ScreenRecorder : MonoBehaviour {
 	}
 
 	public void TakeNextContinuousScreenShot(){
-		if (isRecording && Application.loadedLevel == 1) { //only record in the main game scene. could change this if someone wished to record in other scenes.
-			StartCoroutine(TakeScreenshot(RecordingType.continuousVideo));
-		}
+		StartCoroutine(TakeScreenshot(RecordingType.continuousVideo));
 	}
 
 	public string ScreenShotName(int width, int height, RecordingType recordingType) {
