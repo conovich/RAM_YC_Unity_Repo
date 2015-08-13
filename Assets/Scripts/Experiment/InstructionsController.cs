@@ -75,8 +75,6 @@ public class InstructionsController : MonoBehaviour {
 		}
 	}
 
-
-
 	public void RunInstructions(){
 		SetInstructionsColorful();
 		isFinished = false;

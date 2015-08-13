@@ -207,10 +207,14 @@ public class Logger_Threading : MonoBehaviour{
 		}
 	}
 
+	public long GetFrameCount(){
+		return frameCount;
+	}
 
-	public void Log(long timeLogged, string newLogInfo){
+
+	public void Log(long timeLogged, long frame, string newLogInfo){
 		if (myLoggerQueue != null) {
-			myLoggerQueue.AddToLogQueue (timeLogged + "," + frameCount + "," + newLogInfo);
+			myLoggerQueue.AddToLogQueue (timeLogged + "," + frame + "," + newLogInfo);
 		}
 	}
 

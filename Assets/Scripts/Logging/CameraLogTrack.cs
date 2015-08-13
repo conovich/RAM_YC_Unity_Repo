@@ -24,7 +24,7 @@ public class CameraLogTrack : MonoBehaviour, ILoggable {
 	void LogCamera(){
 		Camera myCamera = GetComponent<Camera>();
 		if(myCamera != null){
-			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, gameObject.name + ",CAMERA_ENABLED," + myCamera.enabled);
+			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), gameObject.name + ",CAMERA_ENABLED," + myCamera.enabled);
 		}
 	}
 }

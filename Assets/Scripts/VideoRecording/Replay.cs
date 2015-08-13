@@ -155,6 +155,9 @@ public class Replay : MonoBehaviour {
 
 					//0 -- timestamp
 					if (i == 0){
+
+						//Debug.Log(currentFrame + " " + splitLine[0] + " " + splitLine[1] + " " + splitLine[2]);
+
 						currentTimeStamp = long.Parse(splitLine[i]);
 						timeDifference = currentTimeStamp - lastTimeRecorded; //gets time between log file lines
 					}
@@ -280,6 +283,39 @@ public class Replay : MonoBehaviour {
 									Debug.Log("Destroying object! " + objInScene.name);
 									GameObject.Destroy(objInScene);
 								}
+
+								//UI - TEXT
+								else if(loggedProperty == "TEXT"){
+									Text text = objInScene.GetComponent<Text>();
+									text.text = "";
+									for(int j = i+2; j < splitLine.Length; j++){ //since splitline is split by commas, the text may have been split unnecessarily.
+										text.text += splitLine[j]; //add each piece of the split text
+										if(j+1 < splitLine.Length){
+											text.text += ","; //since splitline is split by commas, we don't want to exclude these from the line of text.
+										}
+									}
+
+									text.text = text.text.Replace("_NEWLINE_", "\n");
+								}
+								else if(loggedProperty == "TEXT_COLOR"){
+									Text text = objInScene.GetComponent<Text>();
+									float r = float.Parse(splitLine[i+2]);
+									float g = float.Parse(splitLine[i+3]);
+									float b = float.Parse(splitLine[i+4]);
+									float a = float.Parse(splitLine[i+5]);
+									text.color = new Color(r, g, b, a);
+								}
+
+								//UI - PANEL
+								else if (loggedProperty == "PANEL"){
+									Image image = objInScene.GetComponent<Image>();
+									float r = float.Parse(splitLine[i+2]);
+									float g = float.Parse(splitLine[i+3]);
+									float b = float.Parse(splitLine[i+4]);
+									float a = float.Parse(splitLine[i+5]);
+									image.color = new Color(r, g, b, a);
+								}
+
 							}
 							else{
 								Debug.Log("REPLAY: No obj in scene named " + objName);
