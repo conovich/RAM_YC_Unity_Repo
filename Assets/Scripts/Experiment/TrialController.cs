@@ -28,9 +28,9 @@ public class TrialController : MonoBehaviour {
 
 		//THE ENVIRONMENT MUST BE CENTERED AT 0,0,0 FOR THIS TO WORK
 		public Vector3 GetReflectedPosition(Vector3 pos){
-			if (exp.environmentController.transform.position != Vector3.zero) {
-				Debug.Log("Environment is not centered! Reflected position may be incorrect.");
-			}
+			//if (exp.environmentController.transform.position != Vector3.zero) {
+			//	Debug.Log("Environment is not centered! Reflected position may be incorrect.");
+			//}
 			return new Vector3 (-pos.x, pos.y, -pos.z);
 		}
 
