@@ -140,7 +140,7 @@ public class ObjectController : MonoBehaviour {
 				}
 
 				if(distance < bufferDistance + Config.bufferBetweenObjectsAndAvatar){
-					Debug.Log("Trying random object positioning again. Try #: " + (i));
+					//Debug.Log("Trying random object positioning again. Try #: " + (i));
 					continue; //TRY AGAIN.
 				}
 

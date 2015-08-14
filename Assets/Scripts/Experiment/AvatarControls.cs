@@ -5,7 +5,6 @@ public class AvatarControls : MonoBehaviour{
 
 	Experiment exp  { get { return Experiment.Instance; } }
 
-	GameObject collisionObject;
 
 	public bool ShouldLockControls = false;
 
@@ -260,18 +259,11 @@ public class AvatarControls : MonoBehaviour{
 	void Turn( float amount ){
 		transform.RotateAround (transform.position, Vector3.up, amount );
 	}
-
-	void OnCollisionEnter(Collision collision){ //happens before the update loop and before the coroutine loop
-		collisionObject = collision.gameObject;
-		Debug.Log (collision.gameObject.name);
-	}
-
+	
 
 	public IEnumerator MoveToTargetObject(GameObject target){
 
 		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
-
-		collisionObject = null;
 
 		Quaternion origRotation = transform.rotation;
 		Vector3 targetPosition = new Vector3 (target.transform.position.x, transform.position.y, target.transform.position.z);

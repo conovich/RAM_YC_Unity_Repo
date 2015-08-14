@@ -8,6 +8,7 @@ public class TrialController : MonoBehaviour {
 	Experiment exp { get { return Experiment.Instance; } }
 
 	bool isStimTrial  = false;
+	int numRealTrials = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -32,20 +33,26 @@ public class TrialController : MonoBehaviour {
 		
 			//get the number of blocks so far -- floor half the number of trials recorded
 			int totalBlockCount = ExperimentSettings.currentSubject.blocks;
+			numRealTrials = ExperimentSettings.currentSubject.blocks*2;
+			if(Config.doPracticeBlock){
+				if(numRealTrials >= 2){ //otherwise, leave numRealTrials at zero.
+					numRealTrials -= Config.numTestTrialsPract;
+				}
+			}
 
 			Debug.Log ("starting at block " + totalBlockCount);
 
 			//run practice trials
-			bool hasDonePractice = false;
+			bool isPractice = true;
 
-			if(!hasDonePractice && Config.doPracticeBlock){
+			if(isPractice && Config.doPracticeBlock){
 				int practiceCount = totalBlockCount;
 				while( practiceCount < Config.numTestTrialsPract ){
-					yield return StartCoroutine( RunTrial( false ) );
+					yield return StartCoroutine( RunTrial( false, isPractice ) );
 					practiceCount++;
 					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
 				}
-				hasDonePractice = true;
+				isPractice = false;
 				totalBlockCount++;
 				ExperimentSettings.currentSubject.IncrementBlock();
 			}
@@ -53,8 +60,8 @@ public class TrialController : MonoBehaviour {
 			//run regular trials
 			int maxNumTrials = Config.GetTotalNumBlocks();
 			while (totalBlockCount < maxNumTrials) {
-				yield return StartCoroutine (RunTrial (false));
-				yield return StartCoroutine (RunTrial (true));	//counterbalanced stim block TODO: counterbalance!
+				yield return StartCoroutine (RunTrial (false , isPractice));
+				yield return StartCoroutine (RunTrial (true , isPractice));	//counterbalanced stim block TODO: counterbalance!
 				totalBlockCount++;
 				ExperimentSettings.currentSubject.IncrementBlock();
 				Debug.Log("BLOCKS COMPLETED: " + totalBlockCount);
@@ -67,7 +74,16 @@ public class TrialController : MonoBehaviour {
 
 	//INDIVIDUAL TRIALS -- implement for repeating the same thing over and over again
 	//could also create other IEnumerators for other types of trials
-	public IEnumerator RunTrial(bool isStim){
+	public IEnumerator RunTrial(bool isStim, bool isPractice){
+		if (isPractice) {
+			GetComponent<TrialLogTrack> ().Log (-1, isStim);
+			Debug.Log("Logged practice trial.");
+		} 
+		else {
+			GetComponent<TrialLogTrack> ().Log (numRealTrials, isStim);
+			numRealTrials++;
+			Debug.Log("Logged trial #: " + numRealTrials);
+		}
 
 		Debug.Log ("IS STIM: " + isStim);
 

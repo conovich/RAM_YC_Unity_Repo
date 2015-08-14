@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour {
 
 
 	public void SetInstructions(){
-		Debug.Log("hallo instructions cameras");
+		//Debug.Log("hallo instructions cameras");
 
 		TurnOffAllCameras();
 
@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour {
 
 	public void SetInGame(){
 
-		Debug.Log("oh hey in game cameras");
+		//Debug.Log("oh hey in game cameras");
 		TurnOffAllCameras();
 
 		if(ExperimentSettings.isOculus){

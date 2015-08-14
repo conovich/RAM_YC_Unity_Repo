@@ -52,7 +52,7 @@ public class InstructionsController : MonoBehaviour {
 	}
 
 	public void SetInstructionsColorful(){
-		Debug.Log("set instructions dark");
+		//Debug.Log("set instructions dark");
 		if(ExperimentSettings.isOculus){
 			oculusBackground.color = backgroundColorDefault;
 			oculusText.color = textColorDefault;
@@ -64,7 +64,7 @@ public class InstructionsController : MonoBehaviour {
 	}
 	
 	public void SetInstructionsTransparentOverlay(){
-		Debug.Log("set instructions transparent overlay");
+		//Debug.Log("set instructions transparent overlay");
 		if(ExperimentSettings.isOculus){
 			oculusBackground.color = new Color(0,0,0,0);
 			oculusText.color = textColorOverlay;

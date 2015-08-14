@@ -49,7 +49,6 @@ public class Experiment : MonoBehaviour {
 	//bools for whether we have started the state coroutines
 	bool isRunningInstructions = false;
 	bool isRunningExperiment = false;
-	bool hasRunOutOfBlocks = false;
 
 
 	//EXPERIMENT IS A SINGLETON
@@ -165,8 +164,6 @@ public class Experiment : MonoBehaviour {
 		Debug.Log ("Experiment Over");
 		currentState = ExperimentState.inExperimentOver;
 		isRunningExperiment = false;
-
-		hasRunOutOfBlocks = false;
 		
 		SceneController.Instance.LoadEndMenu();
 	}
