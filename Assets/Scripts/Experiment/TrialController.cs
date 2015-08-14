@@ -10,9 +10,42 @@ public class TrialController : MonoBehaviour {
 	bool isStimTrial  = false;
 	int numRealTrials = 0;
 
+
+	List<Trial> ListOfTrialsToBeCounterbalanced;
+
+	private class Trial{
+		public Vector3 objectPosition;	//object position stays the same throughout the trial
+		public Vector3 avatarPosition001;	//learning 1
+		public Vector3 avatarPosition002;	//learning 2
+		public Vector3 avatarPosition003;	//testing
+		public Quaternion avatarRotation001;	//learning 1
+		public Quaternion avatarRotation002;	//learning 2
+		public Quaternion avatarRotation003;	//testing
+
+		public Trial(){
+
+		}
+
+		//THE ENVIRONMENT MUST BE CENTERED AT 0,0,0 FOR THIS TO WORK
+		public Vector3 GetReflectedPosition(Vector3 pos){
+			if (exp.environmentController.transform.position != Vector3.zero) {
+				Debug.Log("Environment is not centered! Reflected position may be incorrect.");
+			}
+			return new Vector3 (-pos.x, pos.y, -pos.z);
+		}
+
+		public Quaternion GetReflectedRotation(Quaternion rot){
+			Vector3 newRot = rot.eulerAngles;
+			newRot = new Vector3(newRot.x, newRot.y + 180, newRot.z);
+			return Quaternion.Euler(newRot);
+		}
+	}
+
+
+
 	// Use this for initialization
 	void Start () {
-
+		ListOfTrialsToBeCounterbalanced = new List<Trial> ();
 	}
 	
 
@@ -100,7 +133,8 @@ public class TrialController : MonoBehaviour {
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
 		
 		//show instruction for "you will now be driven to the OBJECT_NAME from another location.
-		yield return StartCoroutine(exp.ShowSingleInstruction("You will now be driven to the " + newObjectName + " from another location.", true));
+		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + 
+		                                                      "\n from another location.", true));
 
 		//override player input (already done above)
 		//move player to random location
