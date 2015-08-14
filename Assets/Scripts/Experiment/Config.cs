@@ -57,10 +57,10 @@ public class Config : MonoBehaviour {
 	public static bool doPracticeBlock = true;
 	
 	//the following are set in INIT depending on isOneObjectVersion
-	public static int numBlocks = 24; 				//each block is two items	//TODO
+	public static int numBlocks = 2; 				//each block is two items	//TODO
 	public static int numEasyLearningTrials;	//per item, trials with object visible the entire time //TODO
 	public static int numHardLearningTrials;	//per item, trials with object initially visible	//TODO
-	public static int numTestTrials = 48;			//per item, trials with object never visible
+	public static int numTestTrials = 4;			//per item, trials with object never visible
 	
 	//practice settings
 	public static int numEasyLearningTrialsPract = 1;	//TODO
@@ -103,6 +103,15 @@ public class Config : MonoBehaviour {
 
 	void Start(){
 
+	}
+
+	public static int GetTotalNumBlocks(){
+		if (!doPracticeBlock) {
+			return numBlocks;
+		} 
+		else {
+			return numBlocks + 1;
+		}
 	}
 
 	public static void Init(){ //called in experiment.cs

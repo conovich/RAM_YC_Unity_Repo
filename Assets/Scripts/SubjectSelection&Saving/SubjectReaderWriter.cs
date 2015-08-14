@@ -65,7 +65,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 
 				//session
 				string[] splitSession = splitLine[2].Split(' ');
-				newSubject.session = int.Parse(splitSession[1]);
+				newSubject.blocks = int.Parse(splitSession[1]);
 
 				//add to the subject list!
 				subjectDict.Add(newSubject.name, newSubject);
@@ -81,7 +81,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 		fileWriter = new StreamWriter ( subjectFile, true ); //will append to existing file instead of overwriting it
 		
 		//write subject to file
-		fileWriter.WriteLine(subjectName + ",score 0,session 0");
+		fileWriter.WriteLine(subjectName + ",score 0,block 0");
 		
 		//flush & close the file
 		fileWriter.Flush();
@@ -89,15 +89,16 @@ public class SubjectReaderWriter : MonoBehaviour {
 	}
 
 	//have to re-write entire file -- highly non-trivial to edit a single line of the file
+	//written when scenes are loaded
 	public void RecordSubjects(){
-		if( ExperimentSettings.currentSubject != null && !ExperimentSettings.isReplay ){ //do write as each session is completed.
+		if( ExperimentSettings.currentSubject != null && !ExperimentSettings.isReplay ){
 
 			fileWriter = new StreamWriter ( subjectFile, false ); //will overwrite file
 		
 			//write subjects to file
 			foreach(KeyValuePair<string, Subject> entry in SubjectReaderWriter.subjectDict)
 			{
-				fileWriter.WriteLine(entry.Value.name + ",score " + entry.Value.score + ",session "+ entry.Value.session);//",score 0,session 0");
+				fileWriter.WriteLine(entry.Value.name + ",score " + entry.Value.score + ",block "+ entry.Value.blocks);
 			}
 			
 			//flush & close the file

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -31,7 +31,7 @@ public class SubjectSelectionController : MonoBehaviour {
 			SetSubjectStatText("N/A", "N/A", "N/A");
 		}
 		else{
-			SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.session.ToString());
+			SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.blocks.ToString());
 		}
 
 		subjectButtonPrefab.SetActive(false);
@@ -143,7 +143,7 @@ public class SubjectSelectionController : MonoBehaviour {
 			ExperimentSettings.currentSubject = buttonSubject;
 		}
 
-		SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.session.ToString());
+		SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.blocks.ToString());
 
 		Debug.Log("chose subject! " + ExperimentSettings.currentSubject.name);
 	}

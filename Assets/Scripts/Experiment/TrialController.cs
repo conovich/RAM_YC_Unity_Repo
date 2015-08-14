@@ -1,23 +1,24 @@
 using UnityEngine;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
-public class SessionController : MonoBehaviour {
+public class TrialController : MonoBehaviour {
 
 	Experiment exp { get { return Experiment.Instance; } }
 
-	bool isStimTrial = false; 
+	bool isStimTrial  = false;
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
+
 	// Update is called once per frame
 	void Update () {
 	
 	}
-
 
 	//FILL THIS IN DEPENDING ON EXPERIMENT SPECIFICATIONS
 	public IEnumerator RunExperiment(){
@@ -29,17 +30,18 @@ public class SessionController : MonoBehaviour {
 			yield return StartCoroutine (exp.WaitForActionButton ());
 		
 		
-			//execute the number of sessions
-			int totalTrialCount = ExperimentSettings.currentSubject.session;
-			Debug.Log ("starting session at: " + totalTrialCount);
+			//get the number of blocks so far -- floor half the number of trials recorded
+			int totalBlockCount = ExperimentSettings.currentSubject.blocks;
+
+			Debug.Log ("starting at block " + totalBlockCount);
 
 			//run practice trials
 			bool hasDonePractice = false;
 
 			if(!hasDonePractice && Config.doPracticeBlock){
-				int practiceCount = totalTrialCount;
+				int practiceCount = totalBlockCount;
 				while( practiceCount < Config.numTestTrialsPract ){
-					yield return StartCoroutine( RunTrial(false) );
+					yield return StartCoroutine( RunTrial( false ) );
 					practiceCount++;
 					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
 				}
@@ -47,10 +49,12 @@ public class SessionController : MonoBehaviour {
 			}
 
 			//run regular trials
-			while (totalTrialCount < Config.numTestTrials + Config.numTestTrialsPract) {
-				yield return StartCoroutine (RunTrial (isStimTrial));
-				totalTrialCount++;
-				Debug.Log("TRIALS COMPLETED: " + totalTrialCount);
+			while (totalBlockCount < Config.GetTotalNumBlocks()) {
+				yield return StartCoroutine (RunTrial (false));
+				yield return StartCoroutine (RunTrial (true));	//counterbalanced stim block TODO: counterbalance!
+				totalBlockCount++;
+				ExperimentSettings.currentSubject.IncrementBlock();
+				Debug.Log("BLOCKS COMPLETED: " + totalBlockCount);
 			}
 		}
 
@@ -58,8 +62,8 @@ public class SessionController : MonoBehaviour {
 
 	}
 
-	//INDIVIDUAL SESSIONS -- implement for repeating the same thing over and over again
-	//could also create other IEnumerators for other types of sessions
+	//INDIVIDUAL TRIALS -- implement for repeating the same thing over and over again
+	//could also create other IEnumerators for other types of trials
 	public IEnumerator RunTrial(bool isStim){
 
 		Debug.Log ("IS STIM: " + isStim);
@@ -129,9 +133,8 @@ public class SessionController : MonoBehaviour {
 		//calculate points
 		int pointsReceived = exp.scoreController.CalculatePoints(newObject);
 
-		//add point and increment subject session
+		//add points
 		ExperimentSettings.currentSubject.AddScore(pointsReceived);
-		ExperimentSettings.currentSubject.IncrementSession();
 
 		//show aforementioned text
 		yield return StartCoroutine(exp.ShowSingleInstruction("You received " + pointsReceived.ToString() + " points! \n Score: " + exp.scoreController.score,false));

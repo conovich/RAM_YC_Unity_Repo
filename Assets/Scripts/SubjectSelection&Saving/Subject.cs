@@ -5,21 +5,21 @@ public class Subject {
 	
 	public string name;
 	public int score;
-	public int session;
+	public int blocks;
 
 	public Subject(){
 
 	}
 
-	public Subject(string newName, int newScore, int newSession){
+	public Subject(string newName, int newScore, int newBlock){
 		name = newName;
 		score = newScore;
-		session = newSession;
+		blocks = newBlock;
 	}
 
-	public void IncrementSession () {
+	public void IncrementBlock () {
 		Debug.Log("incrementing session");
-		session++;
+		blocks++;
 	}
 	
 	public void AddScore ( int scoreToAdd ) {

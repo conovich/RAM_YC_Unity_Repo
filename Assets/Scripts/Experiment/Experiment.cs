@@ -16,7 +16,7 @@ public class Experiment : MonoBehaviour {
 	[HideInInspector] public Logger_Threading log;
 
 	//session controller
-	public SessionController sessionController;
+	public TrialController trialController;
 
 	//score controller
 	public ScoreController scoreController;
@@ -92,9 +92,13 @@ public class Experiment : MonoBehaviour {
 		//Proceed with experiment if we're not in REPLAY mode
 		if (!ExperimentSettings.isReplay) { //REPLAY IS HANDLED IN REPLAY.CS VIA LOG FILE PARSING
 
-			if(ExperimentSettings.currentSubject.session >= Config.numTestTrials + Config.numTestTrialsPract){
+			int maxNumBlocks = Config.numBlocks;
+			if(Config.doPracticeBlock){
+				maxNumBlocks++;
+			}
+			if(ExperimentSettings.currentSubject.blocks >= Config.numTestTrials + Config.numBlocks){
 
-				StartCoroutine(RunOutOfSessions());
+				StartCoroutine(RunOutOfBlocks());
 
 			}
 			else{
@@ -113,14 +117,14 @@ public class Experiment : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator RunOutOfSessions(){
+	public IEnumerator RunOutOfBlocks(){
 		while(environmentMap.IsActive){
 			yield return 0; //thus, should wait for the button press before ending the experiment
 		}
 
 		cameraController.SetInstructions(); //TODO: might be unecessary? evaluate for oculus...? 
 		
-		yield return StartCoroutine(ShowSingleInstruction("You have finished your sessions! \nPress the action button to proceed.", true));
+		yield return StartCoroutine(ShowSingleInstruction("You have finished your trials! \nPress the action button to proceed.", true));
 		instructionsController.SetInstructionsColorful(); //want to keep a dark screen before transitioning to the end!
 		instructionsController.DisplayText("...loading end screen...");
 		EndExperiment();
@@ -154,14 +158,14 @@ public class Experiment : MonoBehaviour {
 		instructionsController.TurnOffInstructions ();
 		cameraController.SetInGame();
 
-		yield return StartCoroutine(sessionController.RunExperiment());
+		yield return StartCoroutine(trialController.RunExperiment());
 
 		//TODO: should take this out. check that player doesn't get stuck moving forward when experiment ends.
 		/*while (true) {
 			yield return 0;
 		}*/
 		
-		yield return StartCoroutine(RunOutOfSessions()); //calls EndExperiment()
+		yield return StartCoroutine(RunOutOfBlocks()); //calls EndExperiment()
 
 		yield return 0;
 
