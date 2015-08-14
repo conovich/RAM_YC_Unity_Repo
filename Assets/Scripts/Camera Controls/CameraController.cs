@@ -11,10 +11,7 @@ public class CameraController : MonoBehaviour {
 
 	public Transform AvatarOculusParent;
 	public Transform InstructionsOculusParent;
-
-
-	float oculusOrthoSize = 10;
-	bool oculusInstructionsIsOrtho = true;
+	
 
 	// Use this for initialization
 	void Start () {
@@ -33,12 +30,7 @@ public class CameraController : MonoBehaviour {
 		TurnOffAllCameras();
 
 		if(ExperimentSettings.isOculus){
-			//OculusRig.transform.position = InstructionsOculusParent.transform.position;
-			//OculusRig.transform.parent = InstructionsOculusParent;
 
-			//if(OculusInstructionsIsOrtho){
-			//	SetOculusOrtho();
-			//}
 		}
 		else{
 			EnableCameras(AvatarStandardCameraRig, true);
@@ -54,7 +46,7 @@ public class CameraController : MonoBehaviour {
 			//OculusRig.transform.position = AvatarOculusParent.transform.position;
 			//OculusRig.transform.parent = AvatarOculusParent;
 
-			SetOculusPerspective();
+			SetOculus();
 		}
 		else{
 			EnableCameras(AvatarStandardCameraRig, true);
@@ -78,16 +70,7 @@ public class CameraController : MonoBehaviour {
 		}
 	}
 
-	void SetOculusOrtho(){
-		Camera[] cameras = OculusRig.GetComponentsInChildren<Camera>();
-		for(int i = 0; i < cameras.Length; i++){
-			cameras[i].orthographic = true;
-			cameras[i].orthographicSize = oculusOrthoSize;
-
-		}
-	}
-
-	void SetOculusPerspective(){
+	void SetOculus(){
 		Camera[] cameras = OculusRig.GetComponentsInChildren<Camera>();
 		for(int i = 0; i < cameras.Length; i++){
 			cameras[i].orthographic = false;

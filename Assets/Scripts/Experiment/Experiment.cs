@@ -3,9 +3,6 @@ using System.Collections;
 
 public class Experiment : MonoBehaviour {
 
-	//configuration
-	public Config config;
-
 	//clock!
 	public GameClock theGameClock;
 
@@ -86,7 +83,7 @@ public class Experiment : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		config.Init();
+		Config.Init();
 		//inGameInstructionsController.DisplayText("");
 	}
 
@@ -95,7 +92,7 @@ public class Experiment : MonoBehaviour {
 		//Proceed with experiment if we're not in REPLAY mode
 		if (!ExperimentSettings.isReplay) { //REPLAY IS HANDLED IN REPLAY.CS VIA LOG FILE PARSING
 
-			if(ExperimentSettings.currentSubject.session >= config.numSessions){
+			if(ExperimentSettings.currentSubject.session >= Config.numTestTrials + Config.numTestTrialsPract){
 
 				StartCoroutine(RunOutOfSessions());
 

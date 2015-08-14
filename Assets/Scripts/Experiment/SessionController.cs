@@ -6,6 +6,8 @@ public class SessionController : MonoBehaviour {
 
 	Experiment exp { get { return Experiment.Instance; } }
 
+	bool isStimTrial = false; 
+
 	// Use this for initialization
 	void Start () {
 	
@@ -28,11 +30,27 @@ public class SessionController : MonoBehaviour {
 		
 		
 			//execute the number of sessions
-			int sessionCount = ExperimentSettings.currentSubject.session;
-			Debug.Log ("starting session at: " + sessionCount);
-			while (sessionCount < exp.config.numSessions) {
-				sessionCount++;
-				yield return StartCoroutine (RunSession ());
+			int totalTrialCount = ExperimentSettings.currentSubject.session;
+			Debug.Log ("starting session at: " + totalTrialCount);
+
+			//run practice trials
+			bool hasDonePractice = false;
+
+			if(!hasDonePractice && Config.doPracticeBlock){
+				int practiceCount = totalTrialCount;
+				while( practiceCount < Config.numTestTrialsPract ){
+					yield return StartCoroutine( RunTrial(false) );
+					practiceCount++;
+					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
+				}
+				hasDonePractice = true;
+			}
+
+			//run regular trials
+			while (totalTrialCount < Config.numTestTrials + Config.numTestTrialsPract) {
+				yield return StartCoroutine (RunTrial (isStimTrial));
+				totalTrialCount++;
+				Debug.Log("TRIALS COMPLETED: " + totalTrialCount);
 			}
 		}
 
@@ -42,7 +60,9 @@ public class SessionController : MonoBehaviour {
 
 	//INDIVIDUAL SESSIONS -- implement for repeating the same thing over and over again
 	//could also create other IEnumerators for other types of sessions
-	public IEnumerator RunSession(){
+	public IEnumerator RunTrial(bool isStim){
+
+		Debug.Log ("IS STIM: " + isStim);
 
 		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
 
@@ -64,7 +84,7 @@ public class SessionController : MonoBehaviour {
 		//drive player to object
 		exp.avatar.SetRandomLocation();
 		exp.avatar.RotateToEnvCenter();
-		yield return new WaitForSeconds (1.0f); //wait briefly before driving to object
+		yield return new WaitForSeconds (Config.waitAtObjTime); //wait briefly before driving to object
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
 
 

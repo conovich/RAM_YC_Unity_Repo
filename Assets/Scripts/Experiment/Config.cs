@@ -37,31 +37,35 @@ public class Config : MonoBehaviour {
 	doPracticeBlock
 	*/
 
+	void Awake() {
+		DontDestroyOnLoad(transform.gameObject);
+	}
+
 	//session information
-	public int numSessions;
+	//public static int numSessions;
 
 	//stimulation variables
-	public bool shouldDoStim;
-	public int stimFrequency;
-	public float stimDuration;
-	public bool shouldDoBreak;
+	public static bool shouldDoStim;	//TODO
+	public static int stimFrequency;	//TODO
+	public static float stimDuration;	//TODO
+	public static bool shouldDoBreak;	//TODO
 	
 	//test session variables
 	//doTestSession (not implemented in the panda3d version )
 	
 	//practice variables
-	public bool doPracticeBlock = true;
+	public static bool doPracticeBlock = true;
 	
 	//the following are set in INIT depending on isOneObjectVersion
-	int numBlocks; 				//each block is two items
-	int numEasyLearningTrials;	//per item, trials with object visible the entire time
-	int numHardLearningTrials;	//per item, trials with object initially visible
-	int numTestTrials;			//per itme, trials with object never visible
+	public static int numBlocks = 24; 				//each block is two items	//TODO
+	public static int numEasyLearningTrials;	//per item, trials with object visible the entire time //TODO
+	public static int numHardLearningTrials;	//per item, trials with object initially visible	//TODO
+	public static int numTestTrials = 48;			//per item, trials with object never visible
 	
 	//practice settings
-	int numEasyLearningTrialsPract = 1;
-	int numHardLearningTrialsPract = 1;
-	int numTestTrialsPract = 2;
+	public static int numEasyLearningTrialsPract = 1;	//TODO
+	public static int numHardLearningTrialsPract = 1;	//TODO
+	public static int numTestTrialsPract = 2;
 
 
 
@@ -69,40 +73,40 @@ public class Config : MonoBehaviour {
 
 //SPECIFIC RAM-YC VARIABLES:
 
-	public bool isOneObjectVersion;
+	public static bool isOneObjectVersion;
 
 	//autodrive variables
-	public bool shouldAutodrive;
-	public float waitAtObjTime = 1;
-	public float driveTime = 3;
-	public float driveSpeed = 6;
-	public bool do360Spin;
-	public float spinTime = 1;
-	public bool isVisibleDuringSpin = true;
-	public float pauseBeforeSpinTime = 2;
+	public static bool shouldAutodrive = true;	//TODO
+	public static float pauseBeforeSpinTime = 2;	//TODO
+	public static bool isVisibleDuringSpin = true;	//TODO
+	public static bool do360Spin;	//TODO
+	public static float spinTime = 1;	//TODO
+	public static float driveTime = 3;
+	public static float driveSpeed = 22;
+	public static float waitAtObjTime = 1;
 
 	//trial and object spawning variables
-	public bool shouldMaximizeLearningAngle;
-	public int minDegreeBetweenLearningTrials;
-	public int maxDegreeBetweenLearningTrials;
-	public bool shouldDoMassedObjects;
-	public bool shouldRandomizeTestOrder;
-	public bool shouldRandomizeLearnOrder;
-	public float headingOffsetMin = 20;
-	public float headingOffsetMax = 30;
+	public static bool shouldMaximizeLearningAngle = false;
+	public static int minDegreeBetweenLearningTrials = 20;
+	public static int maxDegreeBetweenLearningTrials = 30;
+	public static bool shouldDoMassedObjects;	//TODO
+	public static bool shouldRandomizeTestOrder;	//TODO
+	public static bool shouldRandomizeLearnOrder;	//TODO
+	public static float headingOffsetMin = 20;
+	public static float headingOffsetMax = 40;
 
 	//object buffer variables
-	public float bufferBetweenObjects;
-	public float bufferBetweenObjectsAndWall;
-	public float bufferBetweenObjectsAndAvatar;
+	public static float bufferBetweenObjects = 20;
+	public static float bufferBetweenObjectsAndWall = 20;
+	public static float bufferBetweenObjectsAndAvatar = 20;
 
 
 	void Start(){
 
 	}
 
-	public void Init(){ //called in experiment.cs
-		if (!isOneObjectVersion) {
+	public static void Init(){ //called in experiment.cs
+		/*if (!isOneObjectVersion) {
 			//TODO: set instructions here?
 			numBlocks = 8; 				//each block is two items
 			numEasyLearningTrials = 1;	//per item, trials with object visible the entire time
@@ -135,7 +139,7 @@ public class Config : MonoBehaviour {
 			numEasyLearningTrialsPract = 0;
 			numHardLearningTrialsPract = 2;
 			numTestTrialsPract = 1;
-		}
+		}*/
 	}
 
 }

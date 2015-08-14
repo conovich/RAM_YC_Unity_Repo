@@ -231,7 +231,7 @@ public class AvatarControls : MonoBehaviour{
 
 		if ( Mathf.Abs(verticalAxisInput) > 0.0f) { //EPSILON should be accounted for in Input Settings "dead zone" parameter
 
-			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*exp.config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input																								//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
+			GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*Config.driveSpeed; //should have no deltaTime framerate component -- given the frame, you should always be moving at a speed directly based on the input																								//NOTE: potential problem with this method: joysticks and keyboard input will have different acceleration calibration.
 
 		}
 		else{
@@ -245,7 +245,7 @@ public class AvatarControls : MonoBehaviour{
 
 			//Turn( horizontalAxisInput*RotationSpeed*(Time.deltaTime) ); 
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
-			Debug.Log("horizontal axis ANG VEL = " + GetComponent<Rigidbody>().angularVelocity);
+			//Debug.Log("horizontal axis ANG VEL = " + GetComponent<Rigidbody>().angularVelocity);
 		}
 		else {
 			GetComponent<Rigidbody> ().angularVelocity = Vector3.zero * horizontalAxisInput * RotationSpeed;
@@ -269,7 +269,7 @@ public class AvatarControls : MonoBehaviour{
 
 	public IEnumerator MoveToTargetObject(GameObject target){
 
-		yield return new WaitForSeconds(exp.config.pauseBeforeSpinTime);
+		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
 
 		collisionObject = null;
 
@@ -318,7 +318,7 @@ public class AvatarControls : MonoBehaviour{
 		//float invDistance = 1.0f/distance; //multiply by drive time so that the further you are from an object, the longer it takes to get there
 
 
-		float moveRate = 1.0f / exp.config.driveTime;
+		float moveRate = 1.0f / Config.driveTime;
 		float tElapsed = 0.0f;
 		//stop when you have collided with something
 		while(collisionObject == null){
@@ -338,7 +338,7 @@ public class AvatarControls : MonoBehaviour{
 		}
 		GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-		yield return new WaitForSeconds(exp.config.pauseBeforeSpinTime);
+		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
 
 	}
 
@@ -346,7 +346,7 @@ public class AvatarControls : MonoBehaviour{
 	public void SetRandomLocation(){
 		//based on the wall bounds, pick a location
 
-		float wallBuffer = exp.config.bufferBetweenObjectsAndWall;
+		float wallBuffer = Config.bufferBetweenObjectsAndWall;
 
 		float randomXPos = Random.Range(exp.environmentController.WallsXPos.position.x - wallBuffer, exp.environmentController.WallsXNeg.position.x + wallBuffer);
 		float randomZPos = Random.Range(exp.environmentController.WallsZPos.position.z - wallBuffer, exp.environmentController.WallsZNeg.position.z + wallBuffer);
@@ -369,7 +369,12 @@ public class AvatarControls : MonoBehaviour{
 
 	//only in y axis
 	public void SetRandomRotation(){
-		float randomYRotation = Random.Range(exp.config.minDegreeBetweenLearningTrials, exp.config.maxDegreeBetweenLearningTrials);
+		float randomYRotation = Config.maxDegreeBetweenLearningTrials;
+
+		if (!Config.shouldMaximizeLearningAngle) {
+			Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+		}
+
 		transform.RotateAround(transform.position, Vector3.up, randomYRotation);
 	}
 	

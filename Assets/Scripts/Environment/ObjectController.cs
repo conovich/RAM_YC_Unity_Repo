@@ -111,7 +111,7 @@ public class ObjectController : MonoBehaviour {
 		for(int i = 0; i < 15; i++){ //15 is SUPER ARBITRARY...
 
 			//rotate object within heading offset threshold
-			float randomAngle = Random.Range (experiment.config.headingOffsetMin, experiment.config.headingOffsetMax);
+			float randomAngle = Random.Range (Config.headingOffsetMin, Config.headingOffsetMax);
 			int shouldBeNegative = Random.Range (0, 2); //will pick 1 or 0
 			
 			if (shouldBeNegative == 1) {
@@ -133,13 +133,13 @@ public class ObjectController : MonoBehaviour {
 			if(Physics.Raycast(ray, out hit)){
 				distance = hit.distance;
 				if(hit.collider.gameObject.tag == "Wall"){
-					bufferDistance = experiment.config.bufferBetweenObjectsAndWall;
+					bufferDistance = Config.bufferBetweenObjectsAndWall;
 				}
 				else{
-					bufferDistance = experiment.config.bufferBetweenObjects;
+					bufferDistance = Config.bufferBetweenObjects;
 				}
 
-				if(distance < bufferDistance + experiment.config.bufferBetweenObjectsAndAvatar){
+				if(distance < bufferDistance + Config.bufferBetweenObjectsAndAvatar){
 					Debug.Log("Trying random object positioning again. Try #: " + (i));
 					continue; //TRY AGAIN.
 				}
@@ -196,7 +196,7 @@ public class ObjectController : MonoBehaviour {
 		
 		//move object a random distance in the appropriate direction
 		if (distance != -1) {
-			float randomDistance = Random.Range(experiment.config.bufferBetweenObjectsAndAvatar, distance - bufferDistance);
+			float randomDistance = Random.Range(Config.bufferBetweenObjectsAndAvatar, distance - bufferDistance);
 			objectToMove.transform.position += objectToMove.transform.forward*randomDistance;
 		}
 		
