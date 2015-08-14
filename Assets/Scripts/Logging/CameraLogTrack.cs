@@ -12,7 +12,7 @@ public class CameraLogTrack : MonoBehaviour, ILoggable {
 	
 	// Update is called once per frame
 	void Update () {
-		if(ExperimentSettings.shouldLog){
+		if(ExperimentSettings.isLogging){
 			Log ();
 		}
 	}

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class KeyboardLogTrack : MonoBehaviour, ILoggable {
@@ -13,7 +13,7 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void Update(){
-		if(ExperimentSettings.shouldLog){
+		if(ExperimentSettings.isLogging){
 			Log ();
 		}
 	}

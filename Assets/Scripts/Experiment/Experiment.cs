@@ -49,6 +49,7 @@ public class Experiment : MonoBehaviour {
 	//bools for whether we have started the state coroutines
 	bool isRunningInstructions = false;
 	bool isRunningExperiment = false;
+	bool hasRunOutOfBlocks = false;
 
 
 	//EXPERIMENT IS A SINGLETON
@@ -67,7 +68,7 @@ public class Experiment : MonoBehaviour {
 		}
 		_instance = this;
 
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			logfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
 
 			log = GetComponent<Logger_Threading> ();
@@ -92,26 +93,15 @@ public class Experiment : MonoBehaviour {
 		//Proceed with experiment if we're not in REPLAY mode
 		if (!ExperimentSettings.isReplay) { //REPLAY IS HANDLED IN REPLAY.CS VIA LOG FILE PARSING
 
-			int maxNumBlocks = Config.numBlocks;
-			if(Config.doPracticeBlock){
-				maxNumBlocks++;
-			}
-			if(ExperimentSettings.currentSubject.blocks >= Config.numTestTrials + Config.numBlocks){
+			if (currentState == ExperimentState.instructionsState && !isRunningInstructions) {
+				Debug.Log("running instructions");
 
-				StartCoroutine(RunOutOfBlocks());
+				StartCoroutine(RunInstructions());
 
 			}
-			else{
-				if (currentState == ExperimentState.instructionsState && !isRunningInstructions) {
-					Debug.Log("running instructions");
-
-					StartCoroutine(RunInstructions());
-
-				}
-				else if (currentState == ExperimentState.inExperiment && !isRunningExperiment) {
-					Debug.Log("running experiment");
-					StartCoroutine(BeginExperiment());
-				}
+			else if (currentState == ExperimentState.inExperiment && !isRunningExperiment) {
+				Debug.Log("running experiment");
+				StartCoroutine(BeginExperiment());
 			}
 
 		}
@@ -175,6 +165,8 @@ public class Experiment : MonoBehaviour {
 		Debug.Log ("Experiment Over");
 		currentState = ExperimentState.inExperimentOver;
 		isRunningExperiment = false;
+
+		hasRunOutOfBlocks = false;
 		
 		SceneController.Instance.LoadEndMenu();
 	}
@@ -210,13 +202,13 @@ public class Experiment : MonoBehaviour {
 	
 
 	public void OnExit(){ //call in scene controller when switching to another scene!
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			log.close ();
 		}
 	}
 
 	void OnApplicationQuit(){
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			log.close ();
 		}
 	}

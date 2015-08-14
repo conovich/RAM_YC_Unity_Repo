@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ObjectLogTrack : MonoBehaviour, ILoggable {
@@ -31,7 +31,7 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void Update(){
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			if(!firstLog){
 				firstLog = true;
 			}
@@ -75,7 +75,7 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void OnDestroy(){
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			LogDestroy();
 		}
 	}

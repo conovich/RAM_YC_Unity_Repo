@@ -320,8 +320,9 @@ public class AvatarControls : MonoBehaviour{
 
 		float moveRate = 1.0f / Config.driveTime;
 		float tElapsed = 0.0f;
+		float positionEpsilon = 0.01f;
 		//stop when you have collided with something
-		while(collisionObject == null){
+		while(!CheckXZPositionsCloseEnough(transform.position, desiredPosition, positionEpsilon)){
 			//IF LERPING...
 			//move forward!
 			//transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime*invDistance*exp.config.driveSpeed);
@@ -340,6 +341,18 @@ public class AvatarControls : MonoBehaviour{
 
 		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
 
+	}
+
+	bool CheckXZPositionsCloseEnough(Vector3 position1, Vector3 position2, float epsilon){
+		float xDiff = Mathf.Abs (position1.x - position2.x);
+		float zDiff = Mathf.Abs (position1.z - position2.z);
+
+		if (xDiff < epsilon && zDiff < epsilon) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	//only in x & z coordinates

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
@@ -19,7 +19,7 @@ public class TextLogTrack : MonoBehaviour, ILoggable {
 	
 	// Update is called once per frame
 	void Update () {
-		if(ExperimentSettings.shouldLog && ( currentText != myText.text || !firstLog) ){ //if the text has changed, log it!
+		if(ExperimentSettings.isLogging && ( currentText != myText.text || !firstLog) ){ //if the text has changed, log it!
 			firstLog = true;
 			Log ();
 		}

@@ -46,10 +46,13 @@ public class TrialController : MonoBehaviour {
 					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
 				}
 				hasDonePractice = true;
+				totalBlockCount++;
+				ExperimentSettings.currentSubject.IncrementBlock();
 			}
 
 			//run regular trials
-			while (totalBlockCount < Config.GetTotalNumBlocks()) {
+			int maxNumTrials = Config.GetTotalNumBlocks();
+			while (totalBlockCount < maxNumTrials) {
 				yield return StartCoroutine (RunTrial (false));
 				yield return StartCoroutine (RunTrial (true));	//counterbalanced stim block TODO: counterbalance!
 				totalBlockCount++;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
@@ -20,7 +20,7 @@ public class UIPanelLogTrack : MonoBehaviour, ILoggable {
 	
 	// Update is called once per frame
 	void Update () {
-		if(ExperimentSettings.shouldLog && (currentPanelColor != myPanelImage.color || !firstLog) ){ //if the color has changed, or it's the first log
+		if(ExperimentSettings.isLogging && (currentPanelColor != myPanelImage.color || !firstLog) ){ //if the color has changed, or it's the first log
 			firstLog = true;
 			Log ();
 		}

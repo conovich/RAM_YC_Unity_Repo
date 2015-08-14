@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class MouseLogTrack : MonoBehaviour, ILoggable {
@@ -11,7 +11,7 @@ public class MouseLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void Update(){
-		if (!ExperimentSettings.isOculus && ExperimentSettings.shouldLog) {
+		if (!ExperimentSettings.isOculus && ExperimentSettings.isLogging) {
 			Log ();
 		}
 	}

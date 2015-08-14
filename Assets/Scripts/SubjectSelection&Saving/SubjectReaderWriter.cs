@@ -91,7 +91,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 	//have to re-write entire file -- highly non-trivial to edit a single line of the file
 	//written when scenes are loaded
 	public void RecordSubjects(){
-		if( ExperimentSettings.currentSubject != null && !ExperimentSettings.isReplay ){
+		if( ExperimentSettings.currentSubject != null && !ExperimentSettings.isReplay && ExperimentSettings.isLogging){
 
 			fileWriter = new StreamWriter ( subjectFile, false ); //will overwrite file
 		

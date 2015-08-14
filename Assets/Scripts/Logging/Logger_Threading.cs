@@ -179,7 +179,7 @@ public class Logger_Threading : MonoBehaviour{
 
 	void Start ()
 	{
-		if (ExperimentSettings.shouldLog) {
+		if (ExperimentSettings.isLogging) {
 			myLoggerQueue = new LoggerQueue ();
 			myLoggerWriter = new LoggerWriter (fileName, myLoggerQueue);
 		
