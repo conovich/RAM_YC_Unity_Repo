@@ -5,7 +5,7 @@ public class Subject {
 	
 	public string name;
 	public int score;
-	public int blocks;
+	public int trials;
 
 	public Subject(){
 
@@ -14,12 +14,12 @@ public class Subject {
 	public Subject(string newName, int newScore, int newBlock){
 		name = newName;
 		score = newScore;
-		blocks = newBlock;
+		trials = newBlock;
 	}
 
-	public void IncrementBlock () {
+	public void IncrementTrial () {
 		Debug.Log("incrementing session");
-		blocks++;
+		trials++;
 	}
 	
 	public void AddScore ( int scoreToAdd ) {

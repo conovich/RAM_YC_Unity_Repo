@@ -106,7 +106,7 @@ public class Experiment : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator RunOutOfBlocks(){
+	public IEnumerator RunOutOfTrials(){
 		while(environmentMap.IsActive){
 			yield return 0; //thus, should wait for the button press before ending the experiment
 		}
@@ -154,7 +154,7 @@ public class Experiment : MonoBehaviour {
 			yield return 0;
 		}*/
 		
-		yield return StartCoroutine(RunOutOfBlocks()); //calls EndExperiment()
+		yield return StartCoroutine(RunOutOfTrials()); //calls EndExperiment()
 
 		yield return 0;
 

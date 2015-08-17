@@ -206,7 +206,7 @@ public class Replay : MonoBehaviour {
 					else if (i == 2){
 						string objName = splitLine[i];
 						
-						if(objName != "Mouse" && objName != "Keyboard" && objName != "Trial Log"){
+						if(objName != "Mouse" && objName != "Keyboard" && objName != "Trial Info"){
 
 							GameObject objInScene;
 

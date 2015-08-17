@@ -59,7 +59,7 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 			if(currentSubject != null){
 				endCongratsText.text = "Congratulations " + currentSubject.name + "!";
 				endScoreText.text = currentSubject.score.ToString();
-				endSessionText.text = currentSubject.blocks.ToString();
+				endSessionText.text = currentSubject.trials.ToString();
 			}
 			else{
 				Debug.Log("Current subject is null!");

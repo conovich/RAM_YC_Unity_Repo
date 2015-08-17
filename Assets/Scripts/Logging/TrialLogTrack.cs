@@ -26,6 +26,6 @@ public class TrialLogTrack : MonoBehaviour, ILoggable {
 	}
 	
 	void LogTrial(int trialNumber, bool isStim){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), "Trial Log" + ",NUM_TRIALS," + trialNumber + ",IS_STIM," + isStim);
+		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), "Trial Info" + ",NUM_TRIALS," + trialNumber + ",IS_STIM," + isStim);
 	}
 }

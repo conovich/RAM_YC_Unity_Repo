@@ -347,18 +347,17 @@ public class AvatarControls : MonoBehaviour{
 		}
 	}
 
-	//only in x & z coordinates
-	public void SetRandomLocation(){
+	public Vector3 GenerateRandomLocationXZ(){
 		//based on the wall bounds, pick a location
-
+		
 		float wallBuffer = Config.bufferBetweenObjectsAndWall;
-
+		
 		float randomXPos = Random.Range(exp.environmentController.WallsXPos.position.x - wallBuffer, exp.environmentController.WallsXNeg.position.x + wallBuffer);
 		float randomZPos = Random.Range(exp.environmentController.WallsZPos.position.z - wallBuffer, exp.environmentController.WallsZNeg.position.z + wallBuffer);
-
+		
 		Vector3 newPosition = new Vector3 (randomXPos, transform.position.y, randomZPos);
-
-
+		
+		
 		if(randomXPos > exp.environmentController.WallsXPos.position.x || randomXPos < exp.environmentController.WallsXNeg.position.x){
 			Debug.Log("avatar out of bounds in x!");
 		}
@@ -366,21 +365,34 @@ public class AvatarControls : MonoBehaviour{
 			Debug.Log("avatar out of bounds in z!");
 		}
 
+		return newPosition;
+	}
 
+	//only in x & z coordinates
+	public Vector3 SetRandomLocationXZ(){
 
+		transform.position = GenerateRandomLocationXZ();
 
-		transform.position = newPosition;
+		return transform.position;
+	}
+
+	public float GenerateRandomRotationY(){
+		float randomYRotation = Config.maxDegreeBetweenLearningTrials;
+		
+		if (!Config.shouldMaximizeLearningAngle) {
+			randomYRotation = Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+		}
+
+		return randomYRotation;
 	}
 
 	//only in y axis
-	public void SetRandomRotation(){
-		float randomYRotation = Config.maxDegreeBetweenLearningTrials;
-
-		if (!Config.shouldMaximizeLearningAngle) {
-			Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
-		}
+	public Quaternion SetRandomRotationY(){
+		float randomYRotation = GenerateRandomRotationY ();
 
 		transform.RotateAround(transform.position, Vector3.up, randomYRotation);
+
+		return transform.rotation;
 	}
 	
 	//make avatar face the center of the environment

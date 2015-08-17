@@ -65,7 +65,9 @@ public class SubjectReaderWriter : MonoBehaviour {
 
 				//session
 				string[] splitSession = splitLine[2].Split(' ');
-				newSubject.blocks = int.Parse(splitSession[1]);
+				//newSubject.blocks = int.Parse(splitSession[1]);
+				newSubject.trials = 0; //JUST START IT OVER?! TODO: new save system?
+
 
 				//add to the subject list!
 				subjectDict.Add(newSubject.name, newSubject);
@@ -98,7 +100,7 @@ public class SubjectReaderWriter : MonoBehaviour {
 			//write subjects to file
 			foreach(KeyValuePair<string, Subject> entry in SubjectReaderWriter.subjectDict)
 			{
-				fileWriter.WriteLine(entry.Value.name + ",score " + entry.Value.score + ",block "+ entry.Value.blocks);
+				fileWriter.WriteLine(entry.Value.name + ",score " + entry.Value.score + ",block "+ entry.Value.trials);
 			}
 			
 			//flush & close the file

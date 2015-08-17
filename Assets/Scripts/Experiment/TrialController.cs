@@ -7,51 +7,77 @@ public class TrialController : MonoBehaviour {
 
 	Experiment exp { get { return Experiment.Instance; } }
 
+	bool isPracticeTrial = false;
 	bool isStimTrial  = false;
-	int numRealTrials = 0;
+	int numRealTrials = 0; //used for logging ID's
 
+	//contains strings -- "regular trial" , "counterbalanced trial"
+	//a "counterbalanced trial" is added when a regular trial finishes, as it can now be chosen.
+	//a trial type is chosen from this list at random, then removed from the list.
+	List<string> TrialTypes;
+	string regTrialString = "regular trial";
+	string counterTrialString = "counterbalanced trial";
 
-	List<Trial> ListOfTrialsToBeCounterbalanced;
-
-	private class Trial{
-		public Vector3 objectPosition;	//object position stays the same throughout the trial
-		public Vector3 avatarPosition001;	//learning 1
-		public Vector3 avatarPosition002;	//learning 2
-		public Vector3 avatarPosition003;	//testing
-		public Quaternion avatarRotation001;	//learning 1
-		public Quaternion avatarRotation002;	//learning 2
-		public Quaternion avatarRotation003;	//testing
-
-		public Trial(){
-
-		}
-
-		//THE ENVIRONMENT MUST BE CENTERED AT 0,0,0 FOR THIS TO WORK
-		public Vector3 GetReflectedPosition(Vector3 pos){
-			//if (exp.environmentController.transform.position != Vector3.zero) {
-			//	Debug.Log("Environment is not centered! Reflected position may be incorrect.");
-			//}
-			return new Vector3 (-pos.x, pos.y, -pos.z);
-		}
-
-		public Quaternion GetReflectedRotation(Quaternion rot){
-			Vector3 newRot = rot.eulerAngles;
-			newRot = new Vector3(newRot.x, newRot.y + 180, newRot.z);
-			return Quaternion.Euler(newRot);
-		}
-	}
+	//keeps track of the trials that must be counterbalanced.
+	//chosen from at random when a "counterbalanced trial" is chosen from the TialTypes list.
+	List<Trial> ListOfCounterTrials;
 
 
 
 	// Use this for initialization
 	void Start () {
-		ListOfTrialsToBeCounterbalanced = new List<Trial> ();
+		InitTrialTypes ();
+		ListOfCounterTrials = new List<Trial> ();
 	}
 	
+	void InitTrialTypes(){
+		TrialTypes = new List<string> ();
+		for (int i = 0; i < Config.numTestTrials/2; i++) { //there should always be an even number of test trials, as each block is a pair of trials - trial & counter trial
+			TrialTypes.Add(regTrialString);
+		}
+	}
 
-	// Update is called once per frame
-	void Update () {
+	void AddCounterTrial(Trial regTrial){
+		Trial counterTrial = regTrial.CounterSelf ();
+		ListOfCounterTrials.Add (counterTrial);
+		TrialTypes.Add (counterTrialString);
+	}
+
+	string PickAndRemoveTrialType(){
+		int randomIndex = Random.Range (0, TrialTypes.Count);
+		
+		string trialType = TrialTypes [randomIndex];
+		TrialTypes.RemoveAt (randomIndex);
+		
+		return trialType;
+	}
+
+	Trial PickAndRemoveCounterTrial(){
+		int randomIndex = Random.Range (0, ListOfCounterTrials.Count);
+		Trial counterTrial = ListOfCounterTrials [randomIndex];
+		ListOfCounterTrials.RemoveAt (randomIndex);
+
+		return counterTrial;
+	}
 	
+	
+	Trial GenerateNewTrial(){
+		
+		Trial newTrial = new Trial ();
+		
+		newTrial.avatarPosition001 = exp.avatar.SetRandomLocationXZ();
+		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
+
+		newTrial.objectPosition = exp.objectController.GenerateRandomObjectLocation ();
+		newTrial.avatarRotation001 = exp.avatar.SetRandomRotationY();
+
+		newTrial.avatarPosition002 = exp.avatar.SetRandomLocationXZ();
+		newTrial.avatarRotation002 = exp.avatar.SetRandomRotationY();
+
+		newTrial.avatarPosition003 = exp.avatar.SetRandomLocationXZ();
+		newTrial.avatarRotation003 = exp.avatar.SetRandomRotationY();
+		
+		return newTrial;
 	}
 
 	//FILL THIS IN DEPENDING ON EXPERIMENT SPECIFICATIONS
@@ -65,39 +91,54 @@ public class TrialController : MonoBehaviour {
 		
 		
 			//get the number of blocks so far -- floor half the number of trials recorded
-			int totalBlockCount = ExperimentSettings.currentSubject.blocks;
-			numRealTrials = ExperimentSettings.currentSubject.blocks*2;
+			int totalTrialCount = ExperimentSettings.currentSubject.trials;
+			numRealTrials = totalTrialCount;
 			if(Config.doPracticeBlock){
 				if(numRealTrials >= 2){ //otherwise, leave numRealTrials at zero.
 					numRealTrials -= Config.numTestTrialsPract;
 				}
 			}
 
-			Debug.Log ("starting at block " + totalBlockCount);
+			Debug.Log ("starting at trial " + totalTrialCount);
 
 			//run practice trials
-			bool isPractice = true;
+			isPracticeTrial = true;
 
-			if(isPractice && Config.doPracticeBlock){
-				int practiceCount = totalBlockCount;
+			if(isPracticeTrial && Config.doPracticeBlock){
+				int practiceCount = totalTrialCount;
 				while( practiceCount < Config.numTestTrialsPract ){
-					yield return StartCoroutine( RunTrial( false, isPractice ) );
+					Trial newTrial = GenerateNewTrial();
+					yield return StartCoroutine( RunTrial( false, newTrial ) );
 					practiceCount++;
 					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
+					totalTrialCount++;
 				}
-				isPractice = false;
-				totalBlockCount++;
-				ExperimentSettings.currentSubject.IncrementBlock();
+				isPracticeTrial = false;
+				ExperimentSettings.currentSubject.IncrementTrial();
 			}
 
 			//run regular trials
-			int maxNumTrials = Config.GetTotalNumBlocks();
-			while (totalBlockCount < maxNumTrials) {
-				yield return StartCoroutine (RunTrial (false , isPractice));
-				yield return StartCoroutine (RunTrial (true , isPractice));	//counterbalanced stim block TODO: counterbalance!
-				totalBlockCount++;
-				ExperimentSettings.currentSubject.IncrementBlock();
-				Debug.Log("BLOCKS COMPLETED: " + totalBlockCount);
+			int maxNumTrials = Config.GetTotalNumTrials();
+			while (totalTrialCount < maxNumTrials) {
+				//TODO: pick a trial type
+				string nextTrialType = PickAndRemoveTrialType();
+
+				Debug.Log("NEXT TRIAL TYPE: " + nextTrialType);
+				if(nextTrialType == regTrialString){
+					Trial newTrial = GenerateNewTrial();
+
+					yield return StartCoroutine(RunTrial ( false, newTrial ) );
+
+					AddCounterTrial(newTrial);
+				}
+				else if(nextTrialType == counterTrialString){
+					Trial counterTrial = PickAndRemoveCounterTrial();
+ 					yield return StartCoroutine(RunTrial( true, counterTrial ) ); //counterbalanced trials should have stim
+				}
+
+				totalTrialCount++;
+				ExperimentSettings.currentSubject.IncrementTrial();
+				Debug.Log("TRIALS COMPLETED: " + totalTrialCount);
 			}
 		}
 
@@ -107,8 +148,9 @@ public class TrialController : MonoBehaviour {
 
 	//INDIVIDUAL TRIALS -- implement for repeating the same thing over and over again
 	//could also create other IEnumerators for other types of trials
-	public IEnumerator RunTrial(bool isStim, bool isPractice){
-		if (isPractice) {
+	IEnumerator RunTrial(bool isStim, Trial trial){
+
+		if (isPracticeTrial) {
 			GetComponent<TrialLogTrack> ().Log (-1, isStim);
 			Debug.Log("Logged practice trial.");
 		} 
@@ -120,14 +162,22 @@ public class TrialController : MonoBehaviour {
 
 		Debug.Log ("IS STIM: " + isStim);
 
-		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
+		//move player to random location & rotation
+		//exp.avatar.SetRandomLocationXZ();
+		//exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
+		exp.avatar.transform.position = trial.avatarPosition001;
+		exp.avatar.transform.rotation = trial.avatarRotation001;
 
-		GameObject newObject = exp.objectController.SpawnRandomObject();
+
+		//GameObject newObject = exp.objectController.SpawnRandomObjectXY();
+		GameObject newObject = exp.objectController.SpawnRandomObjectXY (trial.objectPosition);
 		string newObjectName = newObject.GetComponent<SpawnableObject>().GetName();
+
+		//exp.avatar.SetRandomRotationY();
 		
 		//show instruction for "press the button to be driven to the OBJECT_NAME".
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
-
+		
 		//override player input and drive the player to the object
 		exp.avatar.ShouldLockControls = true;
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
@@ -135,15 +185,18 @@ public class TrialController : MonoBehaviour {
 		//show instruction for "you will now be driven to the OBJECT_NAME from another location.
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + 
 		                                                      "\n from another location.", true));
-
+		
 		//override player input (already done above)
 		//move player to random location
 		//drive player to object
-		exp.avatar.SetRandomLocation();
-		exp.avatar.RotateToEnvCenter();
+		//exp.avatar.SetRandomLocationXZ();
+		exp.avatar.transform.position = trial.avatarPosition002;
+		//exp.avatar.RotateToEnvCenter();
+		exp.avatar.transform.rotation = trial.avatarRotation002;
 		yield return new WaitForSeconds (Config.waitAtObjTime); //wait briefly before driving to object
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
 
+		//yield return StartCoroutine (DriveAvatar (newObject));
 
 
 
@@ -165,8 +218,10 @@ public class TrialController : MonoBehaviour {
 		exp.instructionsController.DisplayText("press the button at the location of the " + newObjectName);
 		
 		//move player to random location & rotation
-		exp.avatar.SetRandomLocation();
-		exp.avatar.SetRandomRotation();
+		//exp.avatar.SetRandomLocationXZ();
+		exp.avatar.transform.position = trial.avatarPosition003;
+		//exp.avatar.SetRandomRotationY();
+		exp.avatar.transform.rotation = trial.avatarRotation003;
 
 		//enable player movement
 		//wait for player to press the button, then move on
@@ -196,10 +251,6 @@ public class TrialController : MonoBehaviour {
 		exp.environmentMap.TurnOff();
 		
 		GameObject.Destroy(newObject);
-		
-		//move player to random location & rotation - for next iteration
-		exp.avatar.SetRandomLocation();
-		exp.avatar.SetRandomRotation();
 		
 	}
 }

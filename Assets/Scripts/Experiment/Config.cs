@@ -105,12 +105,12 @@ public class Config : MonoBehaviour {
 
 	}
 
-	public static int GetTotalNumBlocks(){
+	public static int GetTotalNumTrials(){
 		if (!doPracticeBlock) {
-			return numBlocks;
+			return numTestTrials;
 		} 
 		else {
-			return numBlocks + 1;
+			return numTestTrials + numTestTrialsPract;
 		}
 	}
 

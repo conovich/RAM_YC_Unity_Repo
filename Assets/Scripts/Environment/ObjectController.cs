@@ -96,13 +96,21 @@ public class ObjectController : MonoBehaviour {
 	public float bufferBetweenObjectsAndAvatar;*/
 	
 	//TODO: consider last spawn position???
-	void MoveObjectToRandomLocation(GameObject objectToMove){ //also rotates it randomly
-		
-		//move new object to avatar's x and z coordinates & rotation
+	public Vector3 GenerateRandomObjectLocation(){ //also rotates it randomly
+
+		Vector3 origAvatarPos = experiment.avatar.transform.position;
+		Quaternion origAvatarRot = experiment.avatar.transform.rotation;
+
+		//NOT A PASS BY COPY. actually using the avatar's transform for the following method.
+		//...thus, we store the original rot & pos to put it back.
+		//this is a bit of a HACK. T_T
+		Transform newTransform = experiment.avatar.transform;
+
+		/*//move new object to avatar's x and z coordinates & rotation
 		objectToMove.transform.position = new Vector3(experiment.avatar.transform.position.x, objectToMove.transform.position.y, experiment.avatar.transform.position.z);
 		
 		objectToMove.transform.forward = experiment.avatar.transform.forward;
-
+		*/
 
 
 		float bufferDistance = 0;
@@ -121,7 +129,7 @@ public class ObjectController : MonoBehaviour {
 
 
 
-			objectToMove.transform.RotateAround (experiment.avatar.transform.position, Vector3.up, randomAngle);
+			newTransform.RotateAround (experiment.avatar.transform.position, Vector3.up, randomAngle);
 			
 			//disable avatar for upcoming raycast
 			experiment.avatar.enabled = false;
@@ -129,7 +137,7 @@ public class ObjectController : MonoBehaviour {
 			//get distance between object and nearest wall
 			Ray ray;
 			RaycastHit hit;
-			ray = new Ray (objectToMove.transform.position, objectToMove.transform.forward);
+			ray = new Ray (newTransform.position, newTransform.forward);
 			if(Physics.Raycast(ray, out hit)){
 				distance = hit.distance;
 				if(hit.collider.gameObject.tag == "Wall"){
@@ -139,9 +147,9 @@ public class ObjectController : MonoBehaviour {
 					bufferDistance = Config.bufferBetweenObjects;
 				}
 
-				if(distance < bufferDistance + Config.bufferBetweenObjectsAndAvatar){
+				if(distance > bufferDistance + Config.bufferBetweenObjectsAndAvatar){
 					//Debug.Log("Trying random object positioning again. Try #: " + (i));
-					continue; //TRY AGAIN.
+					break; //GET OUT OF LOOP
 				}
 
 
@@ -155,41 +163,6 @@ public class ObjectController : MonoBehaviour {
 
 		}
 
-
-		/*
-		//rotate object within heading offset threshold
-		float randomAngle = Random.Range (experiment.config.headingOffsetMin, experiment.config.headingOffsetMax);
-		int shouldBeNegative = Random.Range (0, 2); //will pick 1 or 0
-		
-		if (shouldBeNegative == 1) {
-			randomAngle *= -1;
-		}
-		
-		objectToMove.transform.RotateAround (experiment.avatar.transform.position, Vector3.up, randomAngle);
-		
-		//disable avatar for upcoming raycast
-		experiment.avatar.enabled = false;
-		
-		//get distance between object and nearest wall
-		Ray ray;
-		RaycastHit hit;
-		float distance = -1.0f;
-		float bufferDistance = 0;
-		ray = new Ray (objectToMove.transform.position, objectToMove.transform.forward);
-		if(Physics.Raycast(ray, out hit)){
-			distance = hit.distance;
-			if(hit.collider.gameObject.tag == "Wall"){
-				bufferDistance = experiment.config.bufferBetweenObjectsAndWall;
-			}
-			else{
-				bufferDistance = experiment.config.bufferBetweenObjects;
-			}
-		}
-		else{
-			Debug.Log("Nothing in front of object!");
-		}
-
-*/
 		
 		//enable avatar again post raycast
 		experiment.avatar.enabled = true;
@@ -197,13 +170,20 @@ public class ObjectController : MonoBehaviour {
 		//move object a random distance in the appropriate direction
 		if (distance != -1) {
 			float randomDistance = Random.Range(Config.bufferBetweenObjectsAndAvatar, distance - bufferDistance);
-			objectToMove.transform.position += objectToMove.transform.forward*randomDistance;
+			newTransform.position += newTransform.forward*randomDistance;
 		}
+
+		Vector3 newPos = newTransform.position;
+		//put the avatar back to it's original location.
+		newTransform.position = origAvatarPos;
+		newTransform.rotation = origAvatarRot;
+
+		return newPos;
 		
 	}
 
 
-	//for more generic object spawning
+	//for more generic object spawning -- such as in Replay!
 	public GameObject SpawnObject( GameObject objToSpawn, Vector3 spawnPos ){
 		lastSpawnPos = spawnPos;
 		GameObject spawnedObj = Instantiate(objToSpawn, spawnPos, objToSpawn.transform.rotation) as GameObject;
@@ -211,46 +191,82 @@ public class ObjectController : MonoBehaviour {
 		return spawnedObj;
 	}
 
+	//spawn random object at a specified location
+	public GameObject SpawnRandomObjectXY (Vector3 spawnPosition){
+		GameObject objToSpawn = ChooseRandomObject ();
+		if (objToSpawn != null) {
+			float spawnPosY = GetObjSpawnHeight(objToSpawn);
+
+			spawnPosition.y = spawnPosY;
+
+			GameObject newObject = Instantiate(objToSpawn, spawnPosition, objToSpawn.transform.rotation) as GameObject;
+
+			lastSpawnPos = newObject.transform.position;
+			
+			MakeObjectFacePlayer(newObject);
+			
+			return newObject;
+		}
+		else{
+			return null;
+		}
+	}
+
 	//for spawning a random object at a random location
-	public GameObject SpawnRandomObject(){
+	public GameObject SpawnRandomObjectXY(){
 		GameObject objToSpawn = ChooseRandomObject ();
 		if (objToSpawn != null) {
 
-			//spawn object based on the size of its renderer
+			float spawnPosY = GetObjSpawnHeight(objToSpawn);
+			Vector3 spawnPos = GenerateRandomObjectLocation();
+			spawnPos = new Vector3(spawnPos.x, spawnPosY, spawnPos.z);
 
-			Renderer objRenderer = objToSpawn.GetComponent<SpawnableObject>().myRenderer;
-			if(objRenderer == null){
-				Debug.Log("null spawnable object renderer on: " + objToSpawn.name);
-			}
+			GameObject newObject = Instantiate(objToSpawn, spawnPos, objToSpawn.transform.rotation) as GameObject;
 
-			//get the distance above the ground it should spawn at
-			float spawnPosY = GroundPlane.transform.position.y + (objRenderer.bounds.extents.y);
-			if(objRenderer.bounds.extents.y == 0){
-				Debug.Log("zero size renderer: " + objToSpawn.name);
-			}
-
-			Vector3 spawnPosition = new Vector3(0.0f, spawnPosY, 0.0f);
-			GameObject newObject = Instantiate(objToSpawn, spawnPosition, objToSpawn.transform.rotation) as GameObject;
-
-			MoveObjectToRandomLocation(newObject);
+			//GenerateRandomObjectLocation(newObject);
 
 			lastSpawnPos = newObject.transform.position;
 
-			//make object face the player
-			Vector3 directionToAvatar = experiment.avatar.transform.position - newObject.transform.position;
-
-			float dotProd = Vector3.Dot(directionToAvatar, newObject.transform.forward);
-			float theta = Mathf.Acos( dotProd / ( directionToAvatar.magnitude*newObject.transform.forward.magnitude ) );
-			newObject.transform.RotateAround(newObject.transform.position, Vector3.up, theta);
-
-			if(newObject.transform.forward.normalized != directionToAvatar.normalized){
-				newObject.transform.RotateAround(newObject.transform.position, Vector3.up, 180.0f);
-			}
+			MakeObjectFacePlayer(newObject);
 
 			return newObject;
 		}
 		else{
 			return null;
+		}
+	}
+
+	float GetObjSpawnHeight( GameObject obj ){
+		//spawn object based on the size of its renderer
+		Renderer objRenderer = obj.GetComponent<SpawnableObject>().myRenderer;
+		if(objRenderer == null){
+				Debug.Log("null spawnable object renderer on: " + obj.name);
+		}
+		
+		//get the distance above the ground it should spawn at
+		float spawnPosY = GroundPlane.transform.position.y + (objRenderer.bounds.extents.y);
+		if(objRenderer.bounds.extents.y == 0){
+				Debug.Log("zero size renderer: " + obj.name);
+		}
+
+		return spawnPosY;
+	}
+
+	void MakeObjectFacePlayer(GameObject obj){
+		if (obj.transform.position == experiment.avatar.transform.position) { //make sure the object is not directly on top of the avatar.
+			Debug.Log("Object is directly on top of the avatar! Cannot face avatar.");
+			return;
+		}
+
+		//make object face the player
+		Vector3 directionToAvatar = experiment.avatar.transform.position - obj.transform.position;
+		
+		float dotProd = Vector3.Dot(directionToAvatar, obj.transform.forward);
+		float theta = Mathf.Acos( dotProd / ( directionToAvatar.magnitude*obj.transform.forward.magnitude ) );
+		obj.transform.RotateAround(obj.transform.position, Vector3.up, theta);
+		
+		if(obj.transform.forward.normalized != directionToAvatar.normalized){
+			obj.transform.RotateAround(obj.transform.position, Vector3.up, 180.0f);
 		}
 	}
 

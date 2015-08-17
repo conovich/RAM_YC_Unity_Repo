@@ -31,7 +31,7 @@ public class SubjectSelectionController : MonoBehaviour {
 			SetSubjectStatText("N/A", "N/A", "N/A");
 		}
 		else{
-			SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.blocks.ToString());
+			SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.trials.ToString());
 		}
 
 		subjectButtonPrefab.SetActive(false);
@@ -143,7 +143,7 @@ public class SubjectSelectionController : MonoBehaviour {
 			ExperimentSettings.currentSubject = buttonSubject;
 		}
 
-		SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.blocks.ToString());
+		SetSubjectStatText(ExperimentSettings.currentSubject.name, ExperimentSettings.currentSubject.score.ToString(), ExperimentSettings.currentSubject.trials.ToString());
 
 		Debug.Log("chose subject! " + ExperimentSettings.currentSubject.name);
 	}

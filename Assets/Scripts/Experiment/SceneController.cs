@@ -62,7 +62,7 @@ public class SceneController : MonoBehaviour { //there can be a separate scene c
 		}
 
 		if (ExperimentSettings.currentSubject != null || ExperimentSettings.isReplay) {
-			if(ExperimentSettings.currentSubject.blocks < Config.GetTotalNumBlocks()){
+			if(ExperimentSettings.currentSubject.trials < Config.GetTotalNumTrials()){
 				Debug.Log ("loading experiment!");
 				Application.LoadLevel (1);
 			}
