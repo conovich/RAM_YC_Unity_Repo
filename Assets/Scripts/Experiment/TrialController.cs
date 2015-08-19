@@ -8,21 +8,8 @@ public class TrialController : MonoBehaviour {
 	Experiment exp { get { return Experiment.Instance; } }
 
 	bool isPracticeTrial = false;
-	//bool isStimTrial  = false;
-	int numRealTrials = 0; //used for logging ID's
-
-	//contains strings -- "regular trial" , "counterbalanced trial"
-	//a "counterbalanced trial" is added when a regular trial finishes, as it can now be chosen.
-	//a trial type is chosen from this list at random, then removed from the list.
-	//List<string> TrialTypes;
-	//string regTrialString = "regular trial";
-	//string counterTrialString = "counterbalanced trial";
-
-	//keeps track of the trials that must be counterbalanced.
-	//chosen from at random when a "counterbalanced trial" is chosen from the TialTypes list.
-	//List<Trial> ListOfCounterTrials;
-
-
+	int numRealTrials = 0; //used for logging trial ID's
+	
 
 	private class Block{
 		public Trial trial1;

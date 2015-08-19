@@ -27,4 +27,15 @@ public class EnvironmentController : MonoBehaviour {
 		return new Vector3(centerX, 0.0f, centerZ);
 	}
 
+	public Vector3 GetRandomPositionWithinWallsXZ(float wallBuffer){
+		
+		float randomXPos = Random.Range(WallsXPos.position.x - wallBuffer, WallsXNeg.position.x + wallBuffer);
+		float randomZPos = Random.Range(WallsZPos.position.z - wallBuffer, WallsZNeg.position.z + wallBuffer);
+		
+		Vector3 newPosition = new Vector3 (randomXPos, transform.position.y, randomZPos);
+
+		
+		return newPosition;
+	}
+
 }

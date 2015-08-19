@@ -79,107 +79,11 @@ public class ObjectController : MonoBehaviour {
 		
 		return chosenObject;
 	}
-	
-	//FROM CONFIG FILE, FOR REFERENCE
-	//trial and object spawning variables
-	/*public bool shouldMaximizeLearningAngle;
-	public int minDegreeBetweenLearningTrials;
-	public bool shouldDoMassedObjects;
-	public bool shouldRandomizeTestOrder;
-	public bool shouldRandomizeLearnOrder;
-	public float headingOffsetMin;
-	public float headingOffsetMax;
-
-	//object buffer variables
-	public float bufferBetweenObjects;
-	public float bufferBetweenObjectsAndWall;
-	public float bufferBetweenObjectsAndAvatar;*/
-	
-	//TODO: consider last spawn position???
-	public Vector3 GenerateRandomObjectLocation(){ //also rotates it randomly
-
-		Vector3 origAvatarPos = experiment.avatar.transform.position;
-		Quaternion origAvatarRot = experiment.avatar.transform.rotation;
-
-		//NOT A PASS BY COPY. actually using the avatar's transform for the following method.
-		//...thus, we store the original rot & pos to put it back.
-		//this is a bit of a HACK. T_T
-		Transform newTransform = experiment.avatar.transform;
-
-		/*//move new object to avatar's x and z coordinates & rotation
-		objectToMove.transform.position = new Vector3(experiment.avatar.transform.position.x, objectToMove.transform.position.y, experiment.avatar.transform.position.z);
-		
-		objectToMove.transform.forward = experiment.avatar.transform.forward;
-		*/
 
 
-		float bufferDistance = 0;
-		float distance = -1.0f;
-		//try to rotate several times to make sure there is enough space between the wall and the avatar for the object
-		for(int i = 0; i < 15; i++){ //15 is SUPER ARBITRARY...
-
-			//rotate object within heading offset threshold
-			float randomAngle = Random.Range (Config.headingOffsetMin, Config.headingOffsetMax);
-			int shouldBeNegative = Random.Range (0, 2); //will pick 1 or 0
-			
-			if (shouldBeNegative == 1) {
-				randomAngle *= -1;
-			}
-
-
-
-
-			newTransform.RotateAround (experiment.avatar.transform.position, Vector3.up, randomAngle);
-			
-			//disable avatar for upcoming raycast
-			experiment.avatar.enabled = false;
-			
-			//get distance between object and nearest wall
-			Ray ray;
-			RaycastHit hit;
-			ray = new Ray (newTransform.position, newTransform.forward);
-			if(Physics.Raycast(ray, out hit)){
-				distance = hit.distance;
-				if(hit.collider.gameObject.tag == "Wall"){
-					bufferDistance = Config.bufferBetweenObjectsAndWall;
-				}
-				else{
-					bufferDistance = Config.bufferBetweenObjects;
-				}
-
-				if(distance > bufferDistance + Config.bufferBetweenObjectsAndAvatar){
-					//Debug.Log("Trying random object positioning again. Try #: " + (i));
-					break; //GET OUT OF LOOP
-				}
-
-
-			}
-			else{
-				Debug.Log("Nothing in front of object!"); //this shouldn't happen if there are environment boundaries...
-			}
-
-
-
-
-		}
-
-		
-		//enable avatar again post raycast
-		experiment.avatar.enabled = true;
-		
-		//move object a random distance in the appropriate direction
-		if (distance != -1) {
-			float randomDistance = Random.Range(Config.bufferBetweenObjectsAndAvatar, distance - bufferDistance);
-			newTransform.position += newTransform.forward*randomDistance;
-		}
-
-		Vector3 newPos = newTransform.position;
-		//put the avatar back to it's original location.
-		newTransform.position = origAvatarPos;
-		newTransform.rotation = origAvatarRot;
-
-		return newPos;
-		
+	public float GenerateRandomRotationY(){
+		float randomRotY = Random.Range (0, 360);
+		return randomRotY;
 	}
 
 
@@ -202,8 +106,9 @@ public class ObjectController : MonoBehaviour {
 			GameObject newObject = Instantiate(objToSpawn, spawnPosition, objToSpawn.transform.rotation) as GameObject;
 
 			lastSpawnPos = newObject.transform.position;
-			
-			MakeObjectFacePlayer(newObject);
+
+			float randomRot = GenerateRandomRotationY();
+			newObject.transform.RotateAround(newObject.transform.position, Vector3.up, randomRot);
 			
 			return newObject;
 		}
@@ -218,16 +123,15 @@ public class ObjectController : MonoBehaviour {
 		if (objToSpawn != null) {
 
 			float spawnPosY = GetObjSpawnHeight(objToSpawn);
-			Vector3 spawnPos = GenerateRandomObjectLocation();
+			Vector3 spawnPos = experiment.environmentController.GetRandomPositionWithinWallsXZ( Config.bufferBetweenObjectsAndWall );
 			spawnPos = new Vector3(spawnPos.x, spawnPosY, spawnPos.z);
 
 			GameObject newObject = Instantiate(objToSpawn, spawnPos, objToSpawn.transform.rotation) as GameObject;
 
-			//GenerateRandomObjectLocation(newObject);
-
 			lastSpawnPos = newObject.transform.position;
 
-			MakeObjectFacePlayer(newObject);
+			float randomRot = GenerateRandomRotationY();
+			newObject.transform.RotateAround(newObject.transform.position, Vector3.up, randomRot);
 
 			return newObject;
 		}
@@ -252,6 +156,7 @@ public class ObjectController : MonoBehaviour {
 		return spawnPosY;
 	}
 
+	//NO LONGER USED. TODO: evaluate if it seems useful for other things in the future...
 	void MakeObjectFacePlayer(GameObject obj){
 		if (obj.transform.position == experiment.avatar.transform.position) { //make sure the object is not directly on top of the avatar.
 			Debug.Log("Object is directly on top of the avatar! Cannot face avatar.");

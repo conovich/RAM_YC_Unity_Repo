@@ -347,60 +347,107 @@ public class AvatarControls : MonoBehaviour{
 		}
 	}
 
-	public Vector3 GenerateRandomLocationXZ(){
-		//based on the wall bounds, pick a location
+	public void RotateTowards(Vector3 position){
+		position = new Vector3(position.x, transform.position.y, position.z); //set the y coordinate to the avatar's -- should still look straight ahead!
 		
-		float wallBuffer = Config.bufferBetweenObjectsAndWall;
-		
-		float randomXPos = Random.Range(exp.environmentController.WallsXPos.position.x - wallBuffer, exp.environmentController.WallsXNeg.position.x + wallBuffer);
-		float randomZPos = Random.Range(exp.environmentController.WallsZPos.position.z - wallBuffer, exp.environmentController.WallsZNeg.position.z + wallBuffer);
-		
-		Vector3 newPosition = new Vector3 (randomXPos, transform.position.y, randomZPos);
-		
-		
-		if(randomXPos > exp.environmentController.WallsXPos.position.x || randomXPos < exp.environmentController.WallsXNeg.position.x){
-			Debug.Log("avatar out of bounds in x!");
-		}
-		else if(randomZPos > exp.environmentController.WallsZPos.position.z || randomZPos < exp.environmentController.WallsZNeg.position.z){
-			Debug.Log("avatar out of bounds in z!");
-		}
-
-		return newPosition;
+		transform.LookAt(position);
 	}
 
-	//only in x & z coordinates
-	public Vector3 SetRandomLocationXZ(){
+	public Vector3 SetLearningLocation001(Vector3 objectPosition){
+		int numPositioningAttempts = 0;
 
-		transform.position = GenerateRandomLocationXZ();
-
-		return transform.position;
-	}
-
-	public float GenerateRandomRotationYLearning(){
-		float randomYRotation = Config.maxDegreeBetweenLearningTrials;
-		
-		if (!Config.shouldMaximizeLearningAngle) {
-			randomYRotation = Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+		Vector3 newPos = objectPosition;
+		while ( Vector3.Distance (newPos, objectPosition) < Config.bufferBetweenObjectsAndAvatar && numPositioningAttempts < 15) { //15 is arbitrary!
+			newPos = exp.environmentController.GetRandomPositionWithinWallsXZ (Config.bufferBetweenObjectsAndWall);
+			numPositioningAttempts++;
 		}
 
-		return randomYRotation;
+		newPos = new Vector3 (newPos.x, transform.position.y, newPos.z);
+		transform.position = newPos;
+
+		return newPos;
 	}
 
-	//only in y axis
-	public Quaternion SetRandomRotationYLearning(){
-		float randomYRotation = GenerateRandomRotationYLearning ();
+	public Vector3 SetLearningLocation002(Vector3 objectPosition, Vector3 lastAvatarPos){
+		//Vector3 avObjDiff = lastAvatarPos - objectPosition;
 
-		transform.RotateAround(transform.position, Vector3.up, randomYRotation);
+		int numPositioningAttempts = 0;
+
+
+		float distance = 0;
+		float bufferDistance = 0;
+		while ( numPositioningAttempts < 15 ) { //15 is arbitrary!
+			numPositioningAttempts++;
+
+			objectPosition = new Vector3(objectPosition.x, transform.position.y, objectPosition.z);
+			transform.position = objectPosition; //put avatar in object position
+			RotateTowards (lastAvatarPos);
+
+			float randomRotation = Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+			int shouldBeNegative = Random.Range (0, 2); //will pick 1 or 0
+			
+			if (shouldBeNegative == 1) {
+				randomRotation *= -1;
+			}
+
+
+			transform.RotateAround (transform.position, Vector3.up, randomRotation); //rotate to face the line along which the avatar must be placed next!
+
+
+
+			//get distance between object and nearest wall
+			Ray ray;
+			RaycastHit hit;
+			ray = new Ray (transform.position, transform.forward); //the avatar is currently in the object's position
+			if (Physics.Raycast (ray, out hit)) {
+				distance = hit.distance;
+				if (hit.collider.gameObject.tag == "Wall") {
+					bufferDistance = Config.bufferBetweenObjectsAndWall;
+				} else {
+					bufferDistance = Config.bufferBetweenObjects;
+				}
+
+				//total buffer = wall buffer + avatar buffer
+				//if the distance between the object and the wall is greater than the buffer distance, this is a good line on which to generate the next avatar position
+				if (distance > bufferDistance + Config.bufferBetweenObjectsAndAvatar) {
+					//Debug.Log("Trying random object positioning again. Try #: " + (i));
+					break; //GET OUT OF LOOP
+				}
+
+			}
+		}
+
+		float randomBetweenDistance = Random.Range (Config.bufferBetweenObjectsAndAvatar, distance); 	//get a distance between the object and the wall
+		Vector3 newAvatarPos = transform.position + randomBetweenDistance * transform.forward;		//set the new position somewhere along the line between the avatar and the wall
+
+		newAvatarPos = new Vector3 (newAvatarPos.x, transform.position.y, newAvatarPos.z);
+		transform.position = newAvatarPos;
+		return newAvatarPos;
+	}
+
+	//assumes the avatar is in the correct location currently
+	public Quaternion SetYRotationAwayFrom(Vector3 objectPosition, float minDegree, float maxDegree){
+		float randomYRotation = Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+		RotateTowards (objectPosition);
+
+		transform.RotateAround (transform.position, Vector3.up, randomYRotation);
 
 		return transform.rotation;
 	}
-	
-	//make avatar face the center of the environment
-	public void RotateToEnvCenter(){
-		Vector3 center = exp.environmentController.center;
-		center = new Vector3(center.x, transform.position.y, center.z); //set the y coordinate to the avatar's -- should still look straight ahead!
 
-		transform.LookAt(center);
+	public float GenerateRandomRotationY(){
+		float randomYRotation = Random.Range (0.0f, 360.0f);
+		
+		return randomYRotation;
 	}
-
+	
+	//only in y axis
+	public Quaternion SetRandomRotationY(){
+		float randomYRotation = GenerateRandomRotationY ();
+		
+		transform.RotateAround(transform.position, Vector3.up, randomYRotation);
+		
+		return transform.rotation;
+	}
+	
 }

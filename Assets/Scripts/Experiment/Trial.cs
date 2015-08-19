@@ -21,18 +21,20 @@ public class Trial {
 
 	public Trial(bool shouldBeStim){
 		isStim = shouldBeStim;
-		
-		avatarPosition001 = exp.avatar.SetRandomLocationXZ();
-		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
-		
-		objectPosition = exp.objectController.GenerateRandomObjectLocation ();
-		avatarRotation001 = exp.avatar.SetRandomRotationYLearning();
-		
-		avatarPosition002 = exp.avatar.SetRandomLocationXZ();
-		avatarRotation002 = exp.avatar.SetRandomRotationYLearning();
-		
-		avatarPosition003 = exp.avatar.SetRandomLocationXZ();
-		avatarRotation003 = exp.avatar.SetRandomRotationYLearning();
+
+		//set object position within the walls of the environment
+		objectPosition = exp.environmentController.GetRandomPositionWithinWallsXZ (Config.bufferBetweenObjectsAndWall);
+
+		avatarPosition001 = exp.avatar.SetLearningLocation001 (objectPosition);
+		avatarRotation001 = exp.avatar.SetYRotationAwayFrom (objectPosition, Config.headingOffsetMin, Config.headingOffsetMax);
+
+		avatarPosition002 = exp.avatar.SetLearningLocation002 (objectPosition, avatarPosition001);
+		avatarRotation002 = exp.avatar.SetYRotationAwayFrom (objectPosition, Config.headingOffsetMin, Config.headingOffsetMax);
+
+
+		avatarPosition003 = exp.environmentController.GetRandomPositionWithinWallsXZ (Config.bufferBetweenObjectsAndWall); //random position!
+		avatarPosition003 = new Vector3 (avatarPosition003.x, exp.avatar.transform.position.y, avatarPosition003.z);
+		avatarRotation003 = exp.avatar.SetRandomRotationY ();
 	}
 	
 	//get reflected rotation
