@@ -57,7 +57,7 @@ public class Config : MonoBehaviour {
 	public static bool doPracticeBlock = true;
 	
 	//the following are set in INIT depending on isOneObjectVersion
-	public static int numBlocks = 2; 				//each block is two items	//TODO
+	public static int numBlocks = 2; 				//each block is two items
 	public static int numEasyLearningTrials;	//per item, trials with object visible the entire time //TODO
 	public static int numHardLearningTrials;	//per item, trials with object initially visible	//TODO
 	public static int numTestTrials = 4;			//per item, trials with object never visible
@@ -86,17 +86,17 @@ public class Config : MonoBehaviour {
 	public static float waitAtObjTime = 1;
 
 	//trial and object spawning variables
-	public static bool shouldMaximizeLearningAngle = false;
+	public static bool shouldMaximizeLearningAngle = true;
 	public static int minDegreeBetweenLearningTrials = 20;
-	public static int maxDegreeBetweenLearningTrials = 30;
-	public static bool shouldDoMassedObjects;	//TODO
-	public static bool shouldRandomizeTestOrder;	//TODO
-	public static bool shouldRandomizeLearnOrder;	//TODO
-	public static float headingOffsetMin = 20;
-	public static float headingOffsetMax = 40;
+	public static int maxDegreeBetweenLearningTrials = 50;
+	//public static bool shouldDoMassedObjects;
+	//public static bool shouldRandomizeTestOrder;
+	//public static bool shouldRandomizeLearnOrder;
+	public static float headingOffsetMin = 30; //offset from object
+	public static float headingOffsetMax = 60; //offset from object
 
 	//object buffer variables
-	public static float bufferBetweenObjects = 20;
+	public static float bufferBetweenObjects = 20; // for each block
 	public static float bufferBetweenObjectsAndWall = 20;
 	public static float bufferBetweenObjectsAndAvatar = 20;
 

@@ -376,7 +376,7 @@ public class AvatarControls : MonoBehaviour{
 		return transform.position;
 	}
 
-	public float GenerateRandomRotationY(){
+	public float GenerateRandomRotationYLearning(){
 		float randomYRotation = Config.maxDegreeBetweenLearningTrials;
 		
 		if (!Config.shouldMaximizeLearningAngle) {
@@ -387,8 +387,8 @@ public class AvatarControls : MonoBehaviour{
 	}
 
 	//only in y axis
-	public Quaternion SetRandomRotationY(){
-		float randomYRotation = GenerateRandomRotationY ();
+	public Quaternion SetRandomRotationYLearning(){
+		float randomYRotation = GenerateRandomRotationYLearning ();
 
 		transform.RotateAround(transform.position, Vector3.up, randomYRotation);
 

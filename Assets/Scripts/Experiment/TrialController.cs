@@ -8,159 +8,150 @@ public class TrialController : MonoBehaviour {
 	Experiment exp { get { return Experiment.Instance; } }
 
 	bool isPracticeTrial = false;
-	bool isStimTrial  = false;
+	//bool isStimTrial  = false;
 	int numRealTrials = 0; //used for logging ID's
 
 	//contains strings -- "regular trial" , "counterbalanced trial"
 	//a "counterbalanced trial" is added when a regular trial finishes, as it can now be chosen.
 	//a trial type is chosen from this list at random, then removed from the list.
-	List<string> TrialTypes;
-	string regTrialString = "regular trial";
-	string counterTrialString = "counterbalanced trial";
+	//List<string> TrialTypes;
+	//string regTrialString = "regular trial";
+	//string counterTrialString = "counterbalanced trial";
 
 	//keeps track of the trials that must be counterbalanced.
 	//chosen from at random when a "counterbalanced trial" is chosen from the TialTypes list.
-	List<Trial> ListOfCounterTrials;
+	//List<Trial> ListOfCounterTrials;
 
 
 
-	// Use this for initialization
-	void Start () {
-		InitTrialTypes ();
-		ListOfCounterTrials = new List<Trial> ();
-	}
-	
-	void InitTrialTypes(){
-		TrialTypes = new List<string> ();
-		for (int i = 0; i < Config.numTestTrials/2; i++) { //there should always be an even number of test trials, as each block is a pair of trials - trial & counter trial
-			TrialTypes.Add(regTrialString);
+	private class Block{
+		public Trial trial1;
+		public Trial trial2;
+
+		public Block(Trial one, Trial two){
+			trial1 = one;
+			trial2 = two;
 		}
 	}
 
-	void AddCounterTrial(Trial regTrial){
-		Trial counterTrial = regTrial.CounterSelf ();
-		ListOfCounterTrials.Add (counterTrial);
-		TrialTypes.Add (counterTrialString);
+	Block practiceBlock; //for use when Config.doPracticeBlock == true!
+
+
+	List<Block> BlockList;
+
+	void Start(){
+		InitTrials ();
 	}
 
-	string PickAndRemoveTrialType(){
-		int randomIndex = Random.Range (0, TrialTypes.Count);
-		
-		string trialType = TrialTypes [randomIndex];
-		TrialTypes.RemoveAt (randomIndex);
-		
-		return trialType;
+	void InitTrials(){
+		BlockList = new List<Block> ();
+
+		if (Config.doPracticeBlock) {
+			Trial one = new Trial(false);		//stim
+			Trial two = new Trial(false);		//non-stim
+			practiceBlock = new Block(one, two);
+		}
+
+		for(int i = 0; i < Config.numBlocks/2; i++){
+			Trial one = new Trial(true);			//stim
+			Trial two = new Trial(false);			//non-stim
+			Block block = new Block(one, two);
+
+			Trial counterOne = one.GetCounterSelf();//non-stim
+			Trial counterTwo = two.GetCounterSelf();//stim
+			Block counterBlock = new Block(counterTwo, counterOne); //add in opposite order to ensure that the [stim, non-stim] pattern is consistent across all blocks
+
+			BlockList.Add(block);
+			BlockList.Add(counterBlock);
+		}
+
 	}
 
-	Trial PickAndRemoveCounterTrial(){
-		int randomIndex = Random.Range (0, ListOfCounterTrials.Count);
-		Trial counterTrial = ListOfCounterTrials [randomIndex];
-		ListOfCounterTrials.RemoveAt (randomIndex);
+	Block PickRandomBlock(){
+		if (BlockList.Count > 0) {
+			int randomBlockIndex = Random.Range (0, BlockList.Count);
+			Block randomBlock = BlockList [randomBlockIndex];
 
-		return counterTrial;
+			BlockList.RemoveAt (randomBlockIndex);
+			return randomBlock;
+		} 
+		else {
+			Debug.Log("No more blocks left!");
+			return null;
+		}
 	}
-	
-	
-	Trial GenerateNewTrial(){
-		
-		Trial newTrial = new Trial ();
-		
-		newTrial.avatarPosition001 = exp.avatar.SetRandomLocationXZ();
-		exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
 
-		newTrial.objectPosition = exp.objectController.GenerateRandomObjectLocation ();
-		newTrial.avatarRotation001 = exp.avatar.SetRandomRotationY();
 
-		newTrial.avatarPosition002 = exp.avatar.SetRandomLocationXZ();
-		newTrial.avatarRotation002 = exp.avatar.SetRandomRotationY();
-
-		newTrial.avatarPosition003 = exp.avatar.SetRandomLocationXZ();
-		newTrial.avatarRotation003 = exp.avatar.SetRandomRotationY();
-		
-		return newTrial;
-	}
 
 	//FILL THIS IN DEPENDING ON EXPERIMENT SPECIFICATIONS
 	public IEnumerator RunExperiment(){
 		if (!ExperimentSettings.isReplay) {
 			//show instructions for exploring
 			yield return StartCoroutine (exp.ShowSingleInstruction ("Use the arrow keys to explore the environment. When finished exploring, press the button.", true));
-		
+			
 			//let player explore
 			yield return StartCoroutine (exp.WaitForActionButton ());
-		
-		
+			
+			
 			//get the number of blocks so far -- floor half the number of trials recorded
 			int totalTrialCount = ExperimentSettings.currentSubject.trials;
 			numRealTrials = totalTrialCount;
-			if(Config.doPracticeBlock){
-				if(numRealTrials >= 2){ //otherwise, leave numRealTrials at zero.
+			if (Config.doPracticeBlock) {
+				if (numRealTrials >= 2) { //otherwise, leave numRealTrials at zero.
 					numRealTrials -= Config.numTestTrialsPract;
 				}
 			}
 
-			Debug.Log ("starting at trial " + totalTrialCount);
-
+			
 			//run practice trials
 			isPracticeTrial = true;
+			
+			if (isPracticeTrial && Config.doPracticeBlock) {
+				yield return StartCoroutine (RunTrial ( practiceBlock.trial1 ));
+				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
+				yield return StartCoroutine (RunTrial ( practiceBlock.trial2 ));
+				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
 
-			if(isPracticeTrial && Config.doPracticeBlock){
-				int practiceCount = totalTrialCount;
-				while( practiceCount < Config.numTestTrialsPract ){
-					Trial newTrial = GenerateNewTrial();
-					yield return StartCoroutine( RunTrial( false, newTrial ) );
-					practiceCount++;
-					Debug.Log("PRACTICE TRIALS COMPLETED: " + practiceCount);
-					totalTrialCount++;
-				}
+				Debug.Log ("PRACTICE TRIALS COMPLETED");
+				totalTrialCount += 2;
 				isPracticeTrial = false;
-				ExperimentSettings.currentSubject.IncrementTrial();
 			}
 
-			//run regular trials
-			int maxNumTrials = Config.GetTotalNumTrials();
-			while (totalTrialCount < maxNumTrials) {
-				//TODO: pick a trial type
-				string nextTrialType = PickAndRemoveTrialType();
 
-				Debug.Log("NEXT TRIAL TYPE: " + nextTrialType);
-				if(nextTrialType == regTrialString){
-					Trial newTrial = GenerateNewTrial();
+			//RUN THE REST OF THE BLOCKS
+			while (BlockList.Count > 0) {
+				Block nextBlock = PickRandomBlock ();
 
-					yield return StartCoroutine(RunTrial ( false, newTrial ) );
+				yield return StartCoroutine (RunTrial ( nextBlock.trial1 ));
+				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
+				yield return StartCoroutine (RunTrial ( nextBlock.trial2 ));
+				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
 
-					AddCounterTrial(newTrial);
-				}
-				else if(nextTrialType == counterTrialString){
-					Trial counterTrial = PickAndRemoveCounterTrial();
- 					yield return StartCoroutine(RunTrial( true, counterTrial ) ); //counterbalanced trials should have stim
-				}
+				totalTrialCount += 2;
 
-				totalTrialCount++;
-				ExperimentSettings.currentSubject.IncrementTrial();
-				Debug.Log("TRIALS COMPLETED: " + totalTrialCount);
+				Debug.Log ("TRIALS COMPLETED: " + totalTrialCount);
 			}
+
+			yield return 0;
 		}
-
-		yield return 0;
-
+		
 	}
 
 	//INDIVIDUAL TRIALS -- implement for repeating the same thing over and over again
 	//could also create other IEnumerators for other types of trials
-	IEnumerator RunTrial(bool isStim, Trial trial){
+	IEnumerator RunTrial(Trial trial){
 
 		if (isPracticeTrial) {
-			GetComponent<TrialLogTrack> ().Log (-1, isStim);
+			GetComponent<TrialLogTrack> ().Log (-1, trial.isStim);
 			Debug.Log("Logged practice trial.");
 		} 
 		else {
-			GetComponent<TrialLogTrack> ().Log (numRealTrials, isStim);
+			GetComponent<TrialLogTrack> ().Log (numRealTrials, trial.isStim);
 			numRealTrials++;
 			Debug.Log("Logged trial #: " + numRealTrials);
 		}
 
-		Debug.Log ("IS STIM: " + isStim);
+		Debug.Log ("IS STIM: " + trial.isStim);
 
 		//move player to random location & rotation
 		//exp.avatar.SetRandomLocationXZ();
