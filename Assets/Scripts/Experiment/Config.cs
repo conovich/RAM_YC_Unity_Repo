@@ -80,7 +80,7 @@ public class Config : MonoBehaviour {
 	public static float pauseBeforeSpinTime = 2;	//TODO
 	public static bool isVisibleDuringSpin = true;	//TODO
 	public static bool do360Spin;	//TODO
-	public static float spinTime = 1;	//TODO
+	public static float spinTime = 1;
 	public static float driveTime = 3;
 	public static float driveSpeed = 22;
 	public static float waitAtObjTime = 1;

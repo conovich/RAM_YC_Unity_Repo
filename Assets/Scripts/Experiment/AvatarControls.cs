@@ -261,9 +261,7 @@ public class AvatarControls : MonoBehaviour{
 	}
 	
 
-	public IEnumerator MoveToTargetObject(GameObject target){
-
-		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+	public IEnumerator DriveToTargetObject(GameObject target){
 
 		Quaternion origRotation = transform.rotation;
 		Vector3 targetPosition = new Vector3 (target.transform.position.x, transform.position.y, target.transform.position.z);
@@ -287,20 +285,33 @@ public class AvatarControls : MonoBehaviour{
 
 		float rotationAngleDifference = transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y;
 
-		int oneDegree = 1;
-		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= oneDegree){
+		float ELAPSEDTIME = 0.0f;
+
+		float rotateRate = 1.0f / Config.spinTime;
+		float tElapsed = 0.0f;
+		float rotationEpsilon = 0.01f;
+		Quaternion origRot = transform.rotation;
+		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= rotationEpsilon){
 			//transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, RotationSpeed*Time.deltaTime);
 
 			//make sure to take the shorter rotation
 			if((rotationAngleDifference > 0 && rotationAngleDifference < 180) || (rotationAngleDifference > -360 && rotationAngleDifference < -180)){
-				Turn (-oneDegree);
+				Turn (-rotateRate);
+
+				tElapsed += (Time.deltaTime * rotateRate);
+				ELAPSEDTIME += Time.deltaTime;
+				//will spherically interpolate the rotation for config.spinTime seconds
+				transform.rotation = Quaternion.Slerp(origRot, desiredRotation, tElapsed);
+
 			}
 			else{
-				Turn (oneDegree);
+				Turn (rotateRate);
 			}
 			yield return 0;
 		}
 		transform.rotation = desiredRotation;
+
+		Debug.Log ("TIME ELAPSED WHILE ROTATING: " + ELAPSEDTIME);
 
 
 		//move to desired location
@@ -310,8 +321,11 @@ public class AvatarControls : MonoBehaviour{
 		//float invDistance = 1.0f/distance; //multiply by drive time so that the further you are from an object, the longer it takes to get there
 
 
+
+		ELAPSEDTIME = 0.0f;
+
 		float moveRate = 1.0f / Config.driveTime;
-		float tElapsed = 0.0f;
+		tElapsed = 0.0f;
 		float positionEpsilon = 0.01f;
 		//stop when you have collided with something
 		while(!CheckXZPositionsCloseEnough(transform.position, desiredPosition, positionEpsilon)){
@@ -322,16 +336,16 @@ public class AvatarControls : MonoBehaviour{
 			transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 2f*Time.deltaTime);*/
 
 			tElapsed += (Time.deltaTime * moveRate);
-
+			ELAPSEDTIME += Time.deltaTime;
 			//will linearly interpolate the position for config.driveTime seconds
 			transform.position = Vector3.Lerp(origPosition, desiredPosition, tElapsed);
 			
 
 			yield return 0;
 		}
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
+		transform.position = desiredPosition;
 
-		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+		Debug.Log ("TIME ELAPSED WHILE DRIVING: " + ELAPSEDTIME);
 
 	}
 

@@ -154,7 +154,9 @@ public class TrialController : MonoBehaviour {
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
 		
 		//drive the player to the object
-		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
+		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+		yield return exp.avatar.StartCoroutine(exp.avatar.DriveToTargetObject(newObject));
+		yield return new WaitForSeconds (Config.waitAtObjTime); //wait at object
 		
 		//show instruction for "you will now be driven to the OBJECT_NAME from another location.
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + 
@@ -165,9 +167,10 @@ public class TrialController : MonoBehaviour {
 		//drive player to object
 		exp.avatar.transform.position = trial.avatarPosition002;
 		exp.avatar.transform.rotation = trial.avatarRotation002;
-		yield return new WaitForSeconds (Config.waitAtObjTime); //wait briefly before driving to object
-		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
 
+		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+		yield return exp.avatar.StartCoroutine(exp.avatar.DriveToTargetObject(newObject));
+		yield return new WaitForSeconds (Config.waitAtObjTime); //wait at object
 
 
 		//HIDE OBJECT
