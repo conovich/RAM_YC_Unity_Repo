@@ -28,21 +28,10 @@ public class SceneController : MonoBehaviour { //there can be a separate scene c
 
 	}
 
-	void GetShortcutInput(){
-		if(Input.GetKeyDown(KeyCode.P)){
-			LoadMainMenu();
-		}
-		else if (Input.GetKeyDown(KeyCode.Q)){
-			LoadExperiment();
-		}
-		else if (Input.GetKeyDown(KeyCode.E)){
-			LoadEndMenu();
-		}
-	}
 
 	// Update is called once per frame
 	void Update () {
-		GetShortcutInput();
+
 	}
 
 	public void LoadMainMenu(){

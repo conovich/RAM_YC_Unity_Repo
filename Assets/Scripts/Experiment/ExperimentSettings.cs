@@ -72,10 +72,6 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 
 	}
 
-	public void GetCurrentSubject(){
-
-	}
-
 	public void SetReplayTrue(){
 		isReplay = true;
 		isLogging = false;

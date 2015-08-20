@@ -20,6 +20,10 @@ public class Trial {
 	}
 
 	public Trial(bool shouldBeStim){
+		Vector3 initAvatarPos = exp.avatar.transform.position;
+		Quaternion initAvatarRot = exp.avatar.transform.rotation;
+
+
 		isStim = shouldBeStim;
 
 		//set object position within the walls of the environment
@@ -35,6 +39,10 @@ public class Trial {
 		avatarPosition003 = exp.environmentController.GetRandomPositionWithinWallsXZ (Config.bufferBetweenObjectsAndWall); //random position!
 		avatarPosition003 = new Vector3 (avatarPosition003.x, exp.avatar.transform.position.y, avatarPosition003.z);
 		avatarRotation003 = exp.avatar.SetRandomRotationY ();
+
+
+		exp.avatar.transform.position = initAvatarPos;
+		exp.avatar.transform.rotation = initAvatarRot;
 	}
 	
 	//get reflected rotation

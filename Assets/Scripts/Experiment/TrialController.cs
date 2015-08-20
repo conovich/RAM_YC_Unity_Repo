@@ -94,10 +94,10 @@ public class TrialController : MonoBehaviour {
 			isPracticeTrial = true;
 			
 			if (isPracticeTrial && Config.doPracticeBlock) {
+
 				yield return StartCoroutine (RunTrial ( practiceBlock.trial1 ));
-				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
+
 				yield return StartCoroutine (RunTrial ( practiceBlock.trial2 ));
-				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
 
 				Debug.Log ("PRACTICE TRIALS COMPLETED");
 				totalTrialCount += 2;
@@ -110,9 +110,8 @@ public class TrialController : MonoBehaviour {
 				Block nextBlock = PickRandomBlock ();
 
 				yield return StartCoroutine (RunTrial ( nextBlock.trial1 ));
-				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
+
 				yield return StartCoroutine (RunTrial ( nextBlock.trial2 ));
-				ExperimentSettings.currentSubject.IncrementTrial (); 					//TODO: move to RunTrial()
 
 				totalTrialCount += 2;
 
@@ -140,24 +139,21 @@ public class TrialController : MonoBehaviour {
 
 		Debug.Log ("IS STIM: " + trial.isStim);
 
-		//move player to random location & rotation
-		//exp.avatar.SetRandomLocationXZ();
-		//exp.avatar.RotateToEnvCenter(); //want object to spawn in a reasonable location. for cases such as avatar facing a corner.
+		//move player to first location & rotation
 		exp.avatar.transform.position = trial.avatarPosition001;
 		exp.avatar.transform.rotation = trial.avatarRotation001;
 
 
-		//GameObject newObject = exp.objectController.SpawnRandomObjectXY();
 		GameObject newObject = exp.objectController.SpawnRandomObjectXY (trial.objectPosition);
 		string newObjectName = newObject.GetComponent<SpawnableObject>().GetName();
 
-		//exp.avatar.SetRandomRotationY();
-		
+		//override player input -- going to be driven to the object
+		exp.avatar.ShouldLockControls = true;
+
 		//show instruction for "press the button to be driven to the OBJECT_NAME".
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
 		
-		//override player input and drive the player to the object
-		exp.avatar.ShouldLockControls = true;
+		//drive the player to the object
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
 		
 		//show instruction for "you will now be driven to the OBJECT_NAME from another location.
@@ -165,16 +161,12 @@ public class TrialController : MonoBehaviour {
 		                                                      "\n from another location.", true));
 		
 		//override player input (already done above)
-		//move player to random location
+		//move player to second location
 		//drive player to object
-		//exp.avatar.SetRandomLocationXZ();
 		exp.avatar.transform.position = trial.avatarPosition002;
-		//exp.avatar.RotateToEnvCenter();
 		exp.avatar.transform.rotation = trial.avatarRotation002;
 		yield return new WaitForSeconds (Config.waitAtObjTime); //wait briefly before driving to object
 		yield return exp.avatar.StartCoroutine(exp.avatar.MoveToTargetObject(newObject));
-
-		//yield return StartCoroutine (DriveAvatar (newObject));
 
 
 
@@ -195,23 +187,18 @@ public class TrialController : MonoBehaviour {
 		//exp.inGameInstructionsController.DisplayText("press the button at the location of the " + newObjectName);
 		exp.instructionsController.DisplayText("press the button at the location of the " + newObjectName);
 		
-		//move player to random location & rotation
-		//exp.avatar.SetRandomLocationXZ();
+		//move player to random location (location 3) & rotation
 		exp.avatar.transform.position = trial.avatarPosition003;
-		//exp.avatar.SetRandomRotationY();
 		exp.avatar.transform.rotation = trial.avatarRotation003;
 
 		//enable player movement
 		//wait for player to press the button, then move on
 		exp.avatar.ShouldLockControls = false;
 		yield return StartCoroutine(exp.WaitForActionButton());
-		//exp.inGameInstructionsController.DisplayText("");
 
 
 		//show overhead view of player's position vs. desired object position
 		//with text: "Nice job. You earned X points. Press the button to continue."
-		//"Response Location" -- in color of response location icon
-
 		exp.environmentMap.SetAvatarVisualPosition(exp.avatar.transform.position);
 		exp.environmentMap.SetObjectVisualPosition(newObject.transform.position);
 		exp.environmentMap.TurnOn();
@@ -222,13 +209,15 @@ public class TrialController : MonoBehaviour {
 		//add points
 		ExperimentSettings.currentSubject.AddScore(pointsReceived);
 
-		//show aforementioned text
+		//show point text
 		yield return StartCoroutine(exp.ShowSingleInstruction("You received " + pointsReceived.ToString() + " points! \n Score: " + exp.scoreController.score,false));
 
 		//turn off the environment map
 		exp.environmentMap.TurnOff();
 		
 		GameObject.Destroy(newObject);
-		
+
+		//increment subject's trial count
+		ExperimentSettings.currentSubject.IncrementTrial (); 
 	}
 }
