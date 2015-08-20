@@ -271,17 +271,7 @@ public class AvatarControls : MonoBehaviour{
 
 		//rotate to look at target
 		transform.rotation = origRotation;
-		//degrees left when avatar will start moving forward while completing the turn
-		float degreesShouldMoveForward = 8.0f;
 
-
-		//SLERP THE ROTATION?
-		/*while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) > degreesShouldMoveForward){ 
-			transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 2f*Time.deltaTime);
-			yield return 0;
-		}*/
-
-		//Debug.Log("euler angles: " + (transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y));
 
 		float rotationAngleDifference = transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y;
 
@@ -317,9 +307,6 @@ public class AvatarControls : MonoBehaviour{
 		//move to desired location
 		Vector3 desiredPosition = new Vector3 (target.transform.position.x, transform.position.y, target.transform.position.z);
 		Vector3 origPosition = transform.position;
-		//float distance = (desiredPosition - transform.position).magnitude;
-		//float invDistance = 1.0f/distance; //multiply by drive time so that the further you are from an object, the longer it takes to get there
-
 
 
 		ELAPSEDTIME = 0.0f;
@@ -329,11 +316,6 @@ public class AvatarControls : MonoBehaviour{
 		float positionEpsilon = 0.01f;
 		//stop when you have collided with something
 		while(!CheckXZPositionsCloseEnough(transform.position, desiredPosition, positionEpsilon)){
-			//IF LERPING...
-			//move forward!
-			//transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime*invDistance*exp.config.driveSpeed);
-			/*//finish the rotation while moving forward -- if SLERPING THE ROTATION
-			transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 2f*Time.deltaTime);*/
 
 			tElapsed += (Time.deltaTime * moveRate);
 			ELAPSEDTIME += Time.deltaTime;
