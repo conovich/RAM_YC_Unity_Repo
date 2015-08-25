@@ -12,7 +12,19 @@ public class ControllerInputTester : MonoBehaviour {
 	void Update () {
 
 		//DPAD -- X & Y Axes
+		if(Input.GetAxis("Horizontal") > 0){
+			Debug.Log("HEYO HORIZONTAL POS");
+		}
+		else if(Input.GetAxis("Horizontal") < 0){
+			Debug.Log("HEYO HORIZONTAL NEG");
+		}
 
+		if(Input.GetAxis("Vertical") > 0){
+			Debug.Log("HEYO HORIZONTAL POS");
+		}
+		else if(Input.GetAxis("Vertical") < 0){
+			Debug.Log("HEYO HORIZONTAL NEG");
+		}
 
 		//3rd axis
 		if(Input.GetAxis("HorizontalLeftJoystick") > 0){
@@ -30,7 +42,7 @@ public class ControllerInputTester : MonoBehaviour {
 			Debug.Log("HEYO VERTICAL NEG");
 		}
 
-		//5th axis
+		/*//5th axis
 		if(Input.GetAxis("HorizontalRightJoystick") > 0){
 			Debug.Log("HEYO HORIZONTAL POS");
 		}
@@ -45,7 +57,7 @@ public class ControllerInputTester : MonoBehaviour {
 		else if(Input.GetAxis("VerticalRightJoystick") < 0){
 			Debug.Log("HEYO VERTICAL NEG");
 		}
-
+*/
 
 		if(Input.GetKey(KeyCode.JoystickButton0)){ //X
 			Debug.Log("BUTTON: 0");
