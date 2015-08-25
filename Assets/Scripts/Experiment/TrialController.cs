@@ -145,6 +145,7 @@ public class TrialController : MonoBehaviour {
 
 
 		GameObject newObject = exp.objectController.SpawnRandomObjectXY (trial.objectPosition);
+		SpawnableObject newSpawnedObject = newObject.GetComponent<SpawnableObject> ();
 		string newObjectName = newObject.GetComponent<SpawnableObject>().GetName();
 
 		//override player input -- going to be driven to the object
@@ -154,7 +155,9 @@ public class TrialController : MonoBehaviour {
 		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
 		
 		//drive the player to the object
+		newSpawnedObject.TurnVisible (false); //important function to turn off the object without setting it inactive -- because we want to keep logging on
 		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+		newSpawnedObject.TurnVisible (true);
 		yield return exp.avatar.StartCoroutine(exp.avatar.DriveToTargetObject(newObject));
 		yield return new WaitForSeconds (Config.waitAtObjTime); //wait at object
 		
@@ -168,7 +171,9 @@ public class TrialController : MonoBehaviour {
 		exp.avatar.transform.position = trial.avatarPosition002;
 		exp.avatar.transform.rotation = trial.avatarRotation002;
 
+		newSpawnedObject.TurnVisible (false);
 		yield return new WaitForSeconds(Config.pauseBeforeSpinTime);
+		newSpawnedObject.TurnVisible (true);
 		yield return exp.avatar.StartCoroutine(exp.avatar.DriveToTargetObject(newObject));
 		yield return new WaitForSeconds (Config.waitAtObjTime); //wait at object
 
@@ -176,8 +181,7 @@ public class TrialController : MonoBehaviour {
 		//HIDE OBJECT
 
 		//turn off visuals of object
-		SpawnableObject newSpawnedObject = newObject.GetComponent<SpawnableObject> ();
-		newSpawnedObject.TurnVisible (false); //important function to turn off the object without setting it inactive -- because we want to keep logging on
+		newSpawnedObject.TurnVisible (false);
 
 		//show instruction for "the OBJECT_NAME is now hidden. you will now drive to the OBJECT_NAME on your own."
 		//+"Press the button to continue, and then drive to the locaiton of the cactus and press the button when you are in the correct location."

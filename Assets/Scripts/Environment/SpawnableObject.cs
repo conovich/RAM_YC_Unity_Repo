@@ -50,4 +50,10 @@ public class SpawnableObject : MonoBehaviour {
 
 		return name;
 	}
+
+	void OnCollisionEnter(Collision collision){
+		if (collision.gameObject.tag == "Player") {
+			TurnVisible(false);
+		}
+	}
 }
