@@ -99,7 +99,7 @@ public class ObjectController : MonoBehaviour {
 	public GameObject SpawnRandomObjectXY (Vector3 spawnPosition){
 		GameObject objToSpawn = ChooseRandomObject ();
 		if (objToSpawn != null) {
-			float spawnPosY = GetObjSpawnHeight(objToSpawn);
+			float spawnPosY = objToSpawn.transform.position.y; //use the prefab's height
 
 			spawnPosition.y = spawnPosY;
 
@@ -122,7 +122,7 @@ public class ObjectController : MonoBehaviour {
 		GameObject objToSpawn = ChooseRandomObject ();
 		if (objToSpawn != null) {
 
-			float spawnPosY = GetObjSpawnHeight(objToSpawn);
+			float spawnPosY = objToSpawn.transform.position.y;
 			Vector3 spawnPos = experiment.environmentController.GetRandomPositionWithinWallsXZ( Config.bufferBetweenObjectsAndWall );
 			spawnPos = new Vector3(spawnPos.x, spawnPosY, spawnPos.z);
 
@@ -138,22 +138,6 @@ public class ObjectController : MonoBehaviour {
 		else{
 			return null;
 		}
-	}
-
-	float GetObjSpawnHeight( GameObject obj ){
-		//spawn object based on the size of its renderer
-		Renderer objRenderer = obj.GetComponent<SpawnableObject>().myRenderer;
-		if(objRenderer == null){
-				Debug.Log("null spawnable object renderer on: " + obj.name);
-		}
-		
-		//get the distance above the ground it should spawn at
-		float spawnPosY = GroundPlane.transform.position.y + (objRenderer.bounds.extents.y);
-		if(objRenderer.bounds.extents.y == 0){
-				Debug.Log("zero size renderer: " + obj.name);
-		}
-
-		return spawnPosY;
 	}
 
 	//NO LONGER USED. TODO: evaluate if it seems useful for other things in the future...

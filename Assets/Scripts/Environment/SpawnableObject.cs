@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 
 public class SpawnableObject : MonoBehaviour {
 
-	public Renderer myRenderer;
 	public bool isVisible = true;
 
 	// Use this for initialization
