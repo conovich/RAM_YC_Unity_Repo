@@ -289,21 +289,12 @@ public class AvatarControls : MonoBehaviour{
 		float rotationEpsilon = 0.01f;
 		Quaternion origRot = transform.rotation;
 		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= rotationEpsilon){
-			//transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, RotationSpeed*Time.deltaTime);
 
-			//make sure to take the shorter rotation
-			if((rotationAngleDifference > 0 && rotationAngleDifference < 180) || (rotationAngleDifference > -360 && rotationAngleDifference < -180)){
-				Turn (-rotateRate);
+			tElapsed += (Time.deltaTime * rotateRate);
+			ELAPSEDTIME += Time.deltaTime;
+			//will spherically interpolate the rotation for config.spinTime seconds
+			transform.rotation = Quaternion.Slerp(origRot, desiredRotation, tElapsed); //SLERP ALWAYS TAKES THE SHORTEST PATH.
 
-				tElapsed += (Time.deltaTime * rotateRate);
-				ELAPSEDTIME += Time.deltaTime;
-				//will spherically interpolate the rotation for config.spinTime seconds
-				transform.rotation = Quaternion.Slerp(origRot, desiredRotation, tElapsed);
-
-			}
-			else{
-				Turn (rotateRate);
-			}
 			yield return 0;
 		}
 		transform.rotation = desiredRotation;
@@ -356,17 +347,28 @@ public class AvatarControls : MonoBehaviour{
 		transform.LookAt(position);
 	}
 
+	//TODO: USE avatarToObjectDistance in CONFIG
 	public Vector3 SetLearningLocation001(Vector3 objectPosition){
 		int numPositioningAttempts = 0;
 
 		Vector3 newPos = objectPosition;
-		while ( Vector3.Distance (newPos, objectPosition) < Config.bufferBetweenObjectsAndAvatar && numPositioningAttempts < 15) { //15 is arbitrary!
+		bool isNewPosWithinWalls = false;
+		while ( ( !isNewPosWithinWalls && numPositioningAttempts < 15 ) || newPos == objectPosition) { //15 is arbitrary!
 			newPos = exp.environmentController.GetRandomPositionWithinWallsXZ (Config.bufferBetweenObjectsAndWall);
+			Vector3 dir = Vector3.Normalize(newPos - objectPosition);
+			newPos = objectPosition + Config.avatarToObjectDistance*dir;
 			numPositioningAttempts++;
+			isNewPosWithinWalls = exp.environmentController.CheckWithinWalls (newPos, Config.bufferBetweenObjectsAndWall);
+
+			//Debug.Log("num positioning attempts: " + numPositioningAttempts);
 		}
 
 		newPos = new Vector3 (newPos.x, transform.position.y, newPos.z);
 		transform.position = newPos;
+
+		//Vector3 newPosNoHeight = new Vector3 (newPos.x, 0, newPos.z);
+		//Vector3 objectPosNoHeight = new Vector3 (objectPosition.x, 0, objectPosition.z);
+		//Debug.Log ("AVATAR POSITION 001 DISTANCE FROM OBJ: " + (newPosNoHeight - objectPosNoHeight).magnitude);
 
 		return newPos;
 	}
@@ -377,9 +379,11 @@ public class AvatarControls : MonoBehaviour{
 		int numPositioningAttempts = 0;
 
 
-		float distance = 0;
+		//float distance = 0;
+		Vector3 newPos = objectPosition;
 		float bufferDistance = 0;
-		while ( numPositioningAttempts < 15 ) { //15 is arbitrary!
+		bool isNewPosWithinWalls = false;
+		while ( !isNewPosWithinWalls && numPositioningAttempts < 15 ) { //15 is arbitrary!
 			numPositioningAttempts++;
 
 			objectPosition = new Vector3(objectPosition.x, transform.position.y, objectPosition.z);
@@ -393,47 +397,38 @@ public class AvatarControls : MonoBehaviour{
 				randomRotation *= -1;
 			}
 
-
 			transform.RotateAround (transform.position, Vector3.up, randomRotation); //rotate to face the line along which the avatar must be placed next!
 
 
+			newPos = objectPosition + Config.avatarToObjectDistance*transform.forward;
+			numPositioningAttempts++;
+			isNewPosWithinWalls = exp.environmentController.CheckWithinWalls (newPos, Config.bufferBetweenObjectsAndWall);
 
-			//get distance between object and nearest wall
-			Ray ray;
-			RaycastHit hit;
-			ray = new Ray (transform.position, transform.forward); //the avatar is currently in the object's position
-			if (Physics.Raycast (ray, out hit)) {
-				distance = hit.distance;
-				if (hit.collider.gameObject.tag == "Wall") {
-					bufferDistance = Config.bufferBetweenObjectsAndWall;
-				} else {
-					bufferDistance = Config.bufferBetweenObjects;
-				}
-
-				//total buffer = wall buffer + avatar buffer
-				//if the distance between the object and the wall is greater than the buffer distance, this is a good line on which to generate the next avatar position
-				if (distance > bufferDistance + Config.bufferBetweenObjectsAndAvatar) {
-					//Debug.Log("Trying random object positioning again. Try #: " + (i));
-					break; //GET OUT OF LOOP
-				}
-
-			}
 		}
 
-		float randomBetweenDistance = Random.Range (Config.bufferBetweenObjectsAndAvatar, distance); 	//get a distance between the object and the wall
-		Vector3 newAvatarPos = transform.position + randomBetweenDistance * transform.forward;		//set the new position somewhere along the line between the avatar and the wall
+		newPos = new Vector3 (newPos.x, transform.position.y, newPos.z);
+		transform.position = newPos;
 
-		newAvatarPos = new Vector3 (newAvatarPos.x, transform.position.y, newAvatarPos.z);
-		transform.position = newAvatarPos;
-		return newAvatarPos;
+		Vector3 newPosNoHeight = new Vector3 (newPos.x, 0, newPos.z);
+		Vector3 objectPosNoHeight = new Vector3 (objectPosition.x, 0, objectPosition.z);
+		Debug.Log ("AVATAR POSITION 002 DISTANCE FROM OBJ: " + (newPosNoHeight - objectPosNoHeight).magnitude);
+
+		return newPos;
 	}
 
 	//assumes the avatar is in the correct location currently
 	public Quaternion SetYRotationAwayFrom(Vector3 objectPosition, float minDegree, float maxDegree){
-		float randomYRotation = Random.Range (Config.minDegreeBetweenLearningTrials, Config.maxDegreeBetweenLearningTrials);
+		float randomYRotation = Random.Range (minDegree, maxDegree);
 		RotateTowards (objectPosition);
 
+		int shouldBeNegative = Random.Range (0, 2); //will pick 1 or 0
+		if (shouldBeNegative == 1) {
+			randomYRotation *= -1;
+		}
+
 		transform.RotateAround (transform.position, Vector3.up, randomYRotation);
+
+		Debug.Log("Random Avatar rotation: " + randomYRotation);
 
 		return transform.rotation;
 	}

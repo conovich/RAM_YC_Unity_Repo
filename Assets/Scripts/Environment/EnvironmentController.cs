@@ -27,6 +27,16 @@ public class EnvironmentController : MonoBehaviour {
 		return new Vector3(centerX, 0.0f, centerZ);
 	}
 
+	public bool CheckWithinWalls(Vector3 position, float wallBuffer){
+		if(position.x < WallsXPos.position.x - wallBuffer && position.x > WallsXNeg.position.x + wallBuffer){
+			if(position.z < WallsZPos.position.z - wallBuffer && position.z > WallsZNeg.position.z + wallBuffer){
+				return true;	
+			}
+		}
+
+		return false;
+	}
+
 	public Vector3 GetRandomPositionWithinWallsXZ(float wallBuffer){
 		
 		float randomXPos = Random.Range(WallsXPos.position.x - wallBuffer, WallsXNeg.position.x + wallBuffer);

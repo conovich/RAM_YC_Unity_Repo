@@ -37,10 +37,6 @@ public class Config : MonoBehaviour {
 	doPracticeBlock
 	*/
 
-	void Awake() {
-		DontDestroyOnLoad(transform.gameObject);
-	}
-
 	//session information
 	//public static int numSessions;
 
@@ -85,6 +81,8 @@ public class Config : MonoBehaviour {
 	public static float driveSpeed = 22;
 	public static float waitAtObjTime = 1;
 
+	public static float avatarToObjectDistance = 0; //The distance you will start from the object will be determine by the driveSpeed and driveTime.
+
 	//trial and object spawning variables
 	public static bool shouldMaximizeLearningAngle = true;
 	public static int minDegreeBetweenLearningTrials = 20;
@@ -100,6 +98,13 @@ public class Config : MonoBehaviour {
 	public static float bufferBetweenObjectsAndWall = 20;
 	public static float bufferBetweenObjectsAndAvatar = 20;
 
+	void Awake(){
+		DontDestroyOnLoad(transform.gameObject);
+
+		float speedUnitsPerSecond = Config.driveSpeed; //GetComponent<Rigidbody>().velocity = transform.forward*verticalAxisInput*Config.driveSpeed
+		avatarToObjectDistance = speedUnitsPerSecond * driveTime; // dX = v*t
+		Debug.Log("AVATAR TO OBJ CONFIG DIST: " + avatarToObjectDistance);
+	}
 
 	void Start(){
 
