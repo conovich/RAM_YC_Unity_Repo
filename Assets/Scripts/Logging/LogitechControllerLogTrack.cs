@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
+//TODO: add some sort of a check if a controller is attached??? or a menu toggle for keyboard vs. joystick?
 //LOG CUSTOM MESSAGES. should be accessed through some global class.
 public class LogitechControllerLogTrack : MonoBehaviour {
 	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
@@ -34,39 +34,17 @@ public class LogitechControllerLogTrack : MonoBehaviour {
 		float[] joystickInput = GetLogitechControllerJoystickInput ();
 		bool[] buttonInput = GetLogitechControllerButtonInput ();
 
-		bool isJoystickInput = CheckAnyJoystickInput(joystickInput); //make sure there was actually joystick input before logging it!
-		if (isJoystickInput) {
-			for (int i = 0; i < numJoystickAxesUsed; i++) {
+		for (int i = 0; i < numJoystickAxesUsed; i++) {
+			if(joystickInput[i] != 0){
 				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount (), "Joystick" + i + "," + joystickInput [i]);
 			}
 		}
 
-		bool isButtonInput = CheckAnyButtonInput(buttonInput); //make sure there was actually button input before logging it!
-		if (isButtonInput) {
-			for (int i = 0; i < numButtons; i++) {
+		for (int i = 0; i < numButtons; i++) {
+			if(buttonInput[i] == true){
 				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount (), "Button" + i + "," + buttonInput [i]);
 			}
 		}
-	}
-
-	bool CheckAnyJoystickInput(float[] joystickInput){
-		for(int i = 0; i < numJoystickAxesUsed; i++){
-			if(joystickInput[i] != 0){
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	bool CheckAnyButtonInput(bool[] buttonInput){
-		for (int i = 0; i < numButtons; i++) {
-			if(buttonInput[i] == true){
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	bool[] GetLogitechControllerButtonInput(){

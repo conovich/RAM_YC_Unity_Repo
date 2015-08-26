@@ -20,10 +20,10 @@ public class ControllerInputTester : MonoBehaviour {
 		}
 
 		if(Input.GetAxis("Vertical") > 0){
-			Debug.Log("HEYO HORIZONTAL POS");
+			Debug.Log("HEYO VERTICAL POS");
 		}
 		else if(Input.GetAxis("Vertical") < 0){
-			Debug.Log("HEYO HORIZONTAL NEG");
+			Debug.Log("HEYO VERTICAL NEG");
 		}
 
 		//3rd axis
