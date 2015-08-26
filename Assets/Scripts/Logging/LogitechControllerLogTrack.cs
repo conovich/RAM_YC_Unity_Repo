@@ -7,7 +7,7 @@ public class LogitechControllerLogTrack : MonoBehaviour {
 	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
 
 	int numButtons = 20;
-	int numJoystickAxesUsed = 4; //DPAD, LEFT JOYSTICK
+	int numJoystickAxesUsed = 2; //DPAD, LEFT JOYSTICK
 
 	// Use this for initialization
 	void Start () {
@@ -81,8 +81,8 @@ public class LogitechControllerLogTrack : MonoBehaviour {
 
 		axesInput[axis++] = Input.GetAxis("Horizontal"); //DPAD X AXIS
 		axesInput[axis++] = Input.GetAxis("Vertical"); //DPAD Y AXIS
-		axesInput[axis++] = Input.GetAxis("HorizontalLeftJoystick"); //3rd AXIS
-		axesInput[axis++] = Input.GetAxis("VerticalLeftJoystick"); //4th AXIS
+		//axesInput[axis++] = Input.GetAxis("HorizontalLeftJoystick"); //3rd AXIS
+		//axesInput[axis++] = Input.GetAxis("VerticalLeftJoystick"); //4th AXIS
 
 		return axesInput;
 	}

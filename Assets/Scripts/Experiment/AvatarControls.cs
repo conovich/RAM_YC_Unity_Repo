@@ -270,9 +270,6 @@ public class AvatarControls : MonoBehaviour{
 		//rotate to look at target
 		transform.rotation = origRotation;
 
-
-		float rotationAngleDifference = transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y;
-
 		float ELAPSEDTIME = 0.0f;
 
 		float rotateRate = 1.0f / Config.spinTime;
@@ -372,7 +369,6 @@ public class AvatarControls : MonoBehaviour{
 
 		//float distance = 0;
 		Vector3 newPos = objectPosition;
-		float bufferDistance = 0;
 		bool isNewPosWithinWalls = false;
 		while ( !isNewPosWithinWalls && numPositioningAttempts < 15 ) { //15 is arbitrary!
 			numPositioningAttempts++;
