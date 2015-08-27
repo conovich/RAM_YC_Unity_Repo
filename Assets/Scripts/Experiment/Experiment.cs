@@ -116,7 +116,7 @@ public class Experiment : MonoBehaviour {
 
 		cameraController.SetInstructions(); //TODO: might be unecessary? evaluate for oculus...? 
 		
-		yield return StartCoroutine(ShowSingleInstruction("You have finished your trials! \nPress the action button to proceed.", true));
+		yield return StartCoroutine(ShowSingleInstruction("You have finished your trials! \nPress the button to proceed.", true, true, 0.0f));
 		instructionsController.SetInstructionsColorful(); //want to keep a dark screen before transitioning to the end!
 		instructionsController.DisplayText("...loading end screen...");
 		EndExperiment();
@@ -129,11 +129,13 @@ public class Experiment : MonoBehaviour {
 
 		cameraController.SetInstructions();
 
-		instructionsController.RunInstructions ();
+		//instructionsController.RunInstructions ();
 
-		while (!instructionsController.isFinished) { //wait until instructions parser has finished showing the instructions
-			yield return 0;
-		}
+		//while (!instructionsController.isFinished) { //wait until instructions parser has finished showing the instructions
+		//	yield return 0;
+		//}
+		yield return StartCoroutine (ShowSingleInstruction (Config.initialInstructions, true, true, Config.minInitialInstructionsTime));
+
 
 		currentState = ExperimentState.inExperiment;
 		isRunningInstructions = false;
@@ -172,7 +174,7 @@ public class Experiment : MonoBehaviour {
 	}
 
 
-	public IEnumerator ShowSingleInstruction(string line, bool isDark){
+	public IEnumerator ShowSingleInstruction(string line, bool isDark, bool waitForButton, float minDisplayTimeSeconds){
 		if(isDark){
 			instructionsController.SetInstructionsColorful();
 		}
@@ -181,7 +183,12 @@ public class Experiment : MonoBehaviour {
 		}
 		cameraController.SetInstructions();
 		instructionsController.DisplayText(line);
-		yield return StartCoroutine(WaitForActionButton());
+
+		yield return new WaitForSeconds (minDisplayTimeSeconds);
+
+		if (waitForButton) {
+			yield return StartCoroutine (WaitForActionButton ());
+		}
 
 		instructionsController.TurnOffInstructions ();
 		cameraController.SetInGame();

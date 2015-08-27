@@ -68,15 +68,24 @@ public class Config : MonoBehaviour {
 
 
 //SPECIFIC RAM-YC VARIABLES:
+	public static string initialInstructions = "In this game, you will learn the location of an object in a grassy field. Your job is to drive to the location of the object and press the joystick button." + 
+		"\n" + "\nAt first the object is visible, but later it is hidden, so you must remember its location." + 
+			"\n" + "\nWe will now show you what the environment looks like. Press the button to continue."; 
+
+	public static float minInitialInstructionsTime = 5.0f;
+	public static float learningTrialInstructionTime = 1.0f; //time each learning trial instruction should be displayed for
+	public static float minTestTrialInstructionTime1 = 4.0f;
+	public static float minTestTrialInstructionTime2 = 1.0f;
+	public static float minScoreMapTime = 0.0f;
 
 	public static bool isAvatarTilting = true;
 	public static float maxTiltAngle = 15.0f; //max angle to tilt
 	public static float maxAngleDifference = 5.0f; //maximum turning angle difference to use in tilt calculation --> currTiltAngle/maxTiltAngle = currentAngleDifference/maxAngleDifference
 
-	public static bool isOneObjectVersion;
+	public static bool isOneObjectVersion = false;	//TODO
 
-	//autodrive variables
-	public static bool shouldAutodrive = true;	//TODO
+	//drive variables
+	public static bool shouldAutodrive = false;	//TODO
 	public static float pauseBeforeSpinTime = 2;	//TODO
 	public static bool isVisibleDuringSpin = true;	//TODO
 	public static bool do360Spin;	//TODO
@@ -125,7 +134,9 @@ public class Config : MonoBehaviour {
 
 	public static void Init(){ //called in experiment.cs
 		/*if (!isOneObjectVersion) {
-			//TODO: set instructions here?
+			initialInstructions = "In this game, you will learn the locations of two objects in a grassy field.  For each period of driving, you will first be shown the name of an object." + 
+			"\n" + "\nYou should then drive to the location of that object and press the joystick button. At first the objects are visible, but later they are hidden, so you must remember their location." +
+			"\n" + "\n\nWe will now show you what the environment looks like. Press the button to continue."
 			numBlocks = 8; 				//each block is two items
 			numEasyLearningTrials = 1;	//per item, trials with object visible the entire time
 			numHardLearningTrials = 2;	//per item, trials with object initially visible
@@ -157,7 +168,13 @@ public class Config : MonoBehaviour {
 			numEasyLearningTrialsPract = 0;
 			numHardLearningTrialsPract = 2;
 			numTestTrialsPract = 1;
-		}*/
+		}
+		else if(shouldAutodrive){
+			initialInstructions = "In this game, you will learn the locations of two objects in a grassy field.  For each period of driving, you will first be shown the name of an object." + 
+			"\n" + "\nYou should then drive to the location of that object and press the joystick button. At first the objects are visible, but later they are hidden, so you must remember their location." +
+			"\n" + "\n\nWe will now show you what the environment looks like. Press the button to continue."
+		}
+		 */
 	}
 
 }

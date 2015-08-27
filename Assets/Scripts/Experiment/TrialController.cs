@@ -74,10 +74,10 @@ public class TrialController : MonoBehaviour {
 	public IEnumerator RunExperiment(){
 		if (!ExperimentSettings.isReplay) {
 			//show instructions for exploring
-			yield return StartCoroutine (exp.ShowSingleInstruction ("Use the arrow keys to explore the environment. When finished exploring, press the button.", true));
+			//yield return StartCoroutine (exp.ShowSingleInstruction ("Use the arrow keys to explore the environment. When finished exploring, press the button.", true, true, 0.0f));
 			
 			//let player explore
-			yield return StartCoroutine (exp.WaitForActionButton ());
+			//yield return StartCoroutine (exp.WaitForActionButton ());
 			
 			
 			//get the number of blocks so far -- floor half the number of trials recorded
@@ -152,7 +152,7 @@ public class TrialController : MonoBehaviour {
 		exp.avatar.ShouldLockControls = true;
 
 		//show instruction for "press the button to be driven to the OBJECT_NAME".
-		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true));
+		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + ".", true, true, Config.learningTrialInstructionTime));
 		
 		//drive the player to the object
 		newSpawnedObject.TurnVisible (false); //important function to turn off the object without setting it inactive -- because we want to keep logging on
@@ -162,8 +162,8 @@ public class TrialController : MonoBehaviour {
 		yield return new WaitForSeconds (Config.waitAtObjTime); //wait at object
 		
 		//show instruction for "you will now be driven to the OBJECT_NAME from another location.
-		yield return StartCoroutine(exp.ShowSingleInstruction("Press the button to be driven to the " + newObjectName + 
-		                                                      "\n from another location.", true));
+		yield return StartCoroutine(exp.ShowSingleInstruction("You will now be driven to the " + newObjectName + 
+		                                                      "\n from another location.", true, false, Config.learningTrialInstructionTime));
 		
 		//override player input (already done above)
 		//move player to second location
@@ -186,9 +186,12 @@ public class TrialController : MonoBehaviour {
 		//show instruction for "the OBJECT_NAME is now hidden. you will now drive to the OBJECT_NAME on your own."
 		//+"Press the button to continue, and then drive to the locaiton of the cactus and press the button when you are in the correct location."
 		yield return StartCoroutine(exp.ShowSingleInstruction("The " + newObjectName + " is now hidden. " +
-														"\nYou will now drive to the " + newObjectName + " on your own." +
-		                                                "\nPress the button to continue, and then drive to the location of the "+ newObjectName +
-		                                                " and press the button when you are in the correct location.", true));
+														"\nYou will now drive to the " + newObjectName + " on your own.", true, false, Config.minTestTrialInstructionTime1));
+		//after some time, add more to the instruction...
+		yield return StartCoroutine(exp.ShowSingleInstruction("The " + newObjectName + " is now hidden. " +
+		                                                      "\nYou will now drive to the " + newObjectName + " on your own." +
+		                                                      "\n" + "\nPress the button to continue, and then drive to the location of the "+ newObjectName +
+		                                                      "\nand press the button when you are in the correct location.", true, true, Config.minTestTrialInstructionTime2));
 		
 		//show black text across top of screen: "press the button at the location of the OBJECT_NAME"
 		//exp.inGameInstructionsController.DisplayText("press the button at the location of the " + newObjectName);
@@ -217,7 +220,8 @@ public class TrialController : MonoBehaviour {
 		ExperimentSettings.currentSubject.AddScore(pointsReceived);
 
 		//show point text
-		yield return StartCoroutine(exp.ShowSingleInstruction("You received " + pointsReceived.ToString() + " points! \n Score: " + exp.scoreController.score,false));
+		yield return StartCoroutine(exp.ShowSingleInstruction("Nice job! You earned " + pointsReceived.ToString() + " points. Press the button to continue. " + 
+		                                                      "\n" + "\n Overall Score: " + exp.scoreController.score,false, true, Config.minScoreMapTime));
 
 		//turn off the environment map
 		exp.environmentMap.TurnOff();
