@@ -153,7 +153,7 @@ public class LoggerWriter : ThreadedJob
 	
 	
 	public virtual void log(string msg) { //took out  ( ... , int level)
-		
+
 		long tick = DateTime.Now.Ticks;
 		//long seconds = tick / TimeSpan.TicksPerSecond;
 		long milliseconds = tick / TimeSpan.TicksPerMillisecond;
@@ -173,9 +173,8 @@ public class Logger_Threading : MonoBehaviour{
 	LoggerWriter myLoggerWriter;
 
 	long frameCount;
-
-	//protected static string fileName;
-	public static string fileName;
+	
+	public string fileName;
 
 	void Start ()
 	{

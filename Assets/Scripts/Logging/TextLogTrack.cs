@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 public class TextLogTrack : MonoBehaviour, ILoggable {
 
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	Text myText;
 	string currentText = "";

@@ -12,8 +12,10 @@ public class Experiment : MonoBehaviour {
 	public CameraController cameraController;
 
 	//logging
-	private string logfile; //gets set based on the current subject in Awake()
-	[HideInInspector] public Logger_Threading log;
+	private string subjectLogfile; //gets set based on the current subject in Awake()
+	public Logger_Threading subjectLog;
+	private string eegLogfile; //gets set based on the current subject in Awake()
+	public Logger_Threading eegLog;
 
 	//session controller
 	public TrialController trialController;
@@ -68,10 +70,11 @@ public class Experiment : MonoBehaviour {
 		_instance = this;
 
 		if (ExperimentSettings.isLogging) {
-			logfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
+			subjectLogfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "Log.txt";
+			eegLogfile = "TextFiles/" + ExperimentSettings.currentSubject.name + "EEGLog.txt";
 
-			log = GetComponent<Logger_Threading> ();
-			Logger_Threading.fileName = logfile;
+			subjectLog.fileName = subjectLogfile;
+			eegLog.fileName = eegLogfile;
 
 		}
 		else if(ExperimentSettings.isReplay) {
@@ -200,13 +203,15 @@ public class Experiment : MonoBehaviour {
 
 	public void OnExit(){ //call in scene controller when switching to another scene!
 		if (ExperimentSettings.isLogging) {
-			log.close ();
+			subjectLog.close ();
+			eegLog.close ();
 		}
 	}
 
 	void OnApplicationQuit(){
 		if (ExperimentSettings.isLogging) {
-			log.close ();
+			subjectLog.close ();
+			eegLog.close ();
 		}
 	}
 

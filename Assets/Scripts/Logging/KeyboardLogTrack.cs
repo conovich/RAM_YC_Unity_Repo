@@ -3,7 +3,7 @@ using System.Collections;
 
 public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	public string[] Keys;
 

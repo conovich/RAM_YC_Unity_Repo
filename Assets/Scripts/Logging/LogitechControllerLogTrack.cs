@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 //TODO: add some sort of a check if a controller is attached??? or a menu toggle for keyboard vs. joystick?
 //LOG CUSTOM MESSAGES. should be accessed through some global class.
 public class LogitechControllerLogTrack : MonoBehaviour {
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	int numButtons = 20;
 	int numJoystickAxesUsed = 2; //DPAD, LEFT JOYSTICK

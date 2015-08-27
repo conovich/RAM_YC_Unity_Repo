@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 public class UIPanelLogTrack : MonoBehaviour, ILoggable {
 	
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	Image myPanelImage;
 	Color currentPanelColor;

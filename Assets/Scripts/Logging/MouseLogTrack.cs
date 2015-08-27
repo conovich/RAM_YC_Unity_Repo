@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MouseLogTrack : MonoBehaviour, ILoggable {
 
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	// Use this for initialization
 	void Start () {

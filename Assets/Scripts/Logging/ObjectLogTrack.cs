@@ -4,7 +4,7 @@ using System.Collections;
 public class ObjectLogTrack : MonoBehaviour, ILoggable {
 
 	//dbLog experimentLog { get { return Experiment.Instance.log; } }
-	Logger_Threading experimentLog { get { return Experiment.Instance.log; } }
+	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
 
 	SpawnableObject spawnedObj;
 	string nameToLog;
