@@ -289,13 +289,12 @@ public class Replay : MonoBehaviour {
 								//UI - TEXT
 								else if(loggedProperty == "TEXT"){
 									Text text = objInScene.GetComponent<Text>();
-									text.text = splitLine[i+2];
-									/*for(int j = i+2; j < splitLine.Length; j++){ //since splitline is split by commas, the text may have been split unnecessarily.
+									for(int j = i+2; j < splitLine.Length; j++){ //the text may have been split unnecessarily if there is a splitCharacter in the text
 										text.text += splitLine[j]; //add each piece of the split text
 										if(j+1 < splitLine.Length){
-											text.text += ","; //since splitline is split by commas, we don't want to exclude these from the line of text.
+											text.text += Logger_Threading.LogTextSeparator; //add back the split characters into the text!
 										}
-									}*/
+									}
 
 									text.text = text.text.Replace("_NEWLINE_", "\n");
 								}
