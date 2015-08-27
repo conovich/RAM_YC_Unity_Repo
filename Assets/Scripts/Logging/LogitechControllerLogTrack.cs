@@ -14,7 +14,7 @@ public class LogitechControllerLogTrack : LogTrack {
 	}
 	
 	void Update(){
-		if(ExperimentSettings.isLogging){
+		if(ExperimentSettings.isLogging && ExperimentSettings.isJoystickInput){
 			LogController();
 		}
 	}

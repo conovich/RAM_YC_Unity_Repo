@@ -21,12 +21,12 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 	}
 
 	public static bool isOculus = false;
-	public static bool isPractice = false;
+	public static bool isJoystickInput = false;
 	public static bool isReplay = false;
 	public static bool isLogging = true; //if not in replay mode, should log things! or can be toggled off in main menu.
 
 	public Toggle oculusToggle; //only exists in main menu -- make sure to null check
-	public Toggle practiceToggle; //only exists in main menu -- make sure to null check
+	public Toggle joystickInputToggle; //only exists in main menu -- make sure to null check
 	public Toggle loggingToggle; //only exists in main menu -- make sure to null check
 
 	public Text endCongratsText;
@@ -96,9 +96,9 @@ public class ExperimentSettings : MonoBehaviour { //should be in main menu AND e
 
 	}
 
-	public void SetPracticeMode(){
-		if (practiceToggle) {
-			isPractice = practiceToggle.isOn;
+	public void SetJoystickInput(){
+		if (joystickInputToggle) {
+			isJoystickInput = joystickInputToggle.isOn;
 		}
 	}
 
