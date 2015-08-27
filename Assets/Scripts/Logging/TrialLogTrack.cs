@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class TrialLogTrack : MonoBehaviour, ILoggable {
-
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class TrialLogTrack : LogTrack {
 	
 	// Use this for initialization
 	void Start () {
@@ -15,10 +13,7 @@ public class TrialLogTrack : MonoBehaviour, ILoggable {
 
 	}
 
-	public void Log(){ //well... the interface template isn't working so well for this right now. might have to refactor later.
-
-	}
-
+	//gets called from trial controller instead of in update!
 	public void Log(int trialNumber, bool isStim){
 		if (ExperimentSettings.isLogging) {
 			LogTrial (trialNumber, isStim);
@@ -26,6 +21,6 @@ public class TrialLogTrack : MonoBehaviour, ILoggable {
 	}
 	
 	void LogTrial(int trialNumber, bool isStim){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), "Trial Info" + ",NUM_TRIALS," + trialNumber + ",IS_STIM," + isStim);
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), "Trial Info" + separator + "NUM_TRIALS" + separator + trialNumber + separator + "IS_STIM" + separator + isStim);
 	}
 }

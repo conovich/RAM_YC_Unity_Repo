@@ -136,7 +136,6 @@ public class Experiment : MonoBehaviour {
 		//}
 		yield return StartCoroutine (ShowSingleInstruction (Config.initialInstructions, true, true, Config.minInitialInstructionsTime));
 
-
 		currentState = ExperimentState.inExperiment;
 		isRunningInstructions = false;
 
@@ -151,6 +150,8 @@ public class Experiment : MonoBehaviour {
 		//in case instructions are still on... should perhaps make this it's own function.
 		instructionsController.TurnOffInstructions ();
 		cameraController.SetInGame();
+
+		yield return StartCoroutine (WaitForActionButton ()); //explore the environment until this button press
 
 		yield return StartCoroutine(trialController.RunExperiment());
 

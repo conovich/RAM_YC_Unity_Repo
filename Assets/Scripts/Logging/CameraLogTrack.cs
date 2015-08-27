@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class CameraLogTrack : MonoBehaviour, ILoggable {
-
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class CameraLogTrack : LogTrack {
 
 	// Use this for initialization
 	void Start () {
@@ -13,18 +11,14 @@ public class CameraLogTrack : MonoBehaviour, ILoggable {
 	// Update is called once per frame
 	void Update () {
 		if(ExperimentSettings.isLogging){
-			Log ();
+			LogCamera ();
 		}
-	}
-
-	public void Log(){
-		LogCamera ();
 	}
 
 	void LogCamera(){
 		Camera myCamera = GetComponent<Camera>();
 		if(myCamera != null){
-			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), gameObject.name + ",CAMERA_ENABLED," + myCamera.enabled);
+			subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), gameObject.name + separator + "CAMERA_ENABLED" + separator + myCamera.enabled);
 		}
 	}
 }

@@ -49,6 +49,7 @@ public class ScoreController : MonoBehaviour {
 			return 25;
 		}
 		else{
+			score += 10;
 			return 10;
 		}
 	}

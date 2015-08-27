@@ -65,8 +65,6 @@ public class Config : MonoBehaviour {
 
 
 
-
-
 //SPECIFIC RAM-YC VARIABLES:
 	public static string initialInstructions = "In this game, you will learn the location of an object in a grassy field. Your job is to drive to the location of the object and press the joystick button." + 
 		"\n" + "\nAt first the object is visible, but later it is hidden, so you must remember its location." + 

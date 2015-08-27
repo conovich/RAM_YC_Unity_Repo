@@ -3,8 +3,7 @@ using System.Collections;
 
 //TODO: add some sort of a check if a controller is attached??? or a menu toggle for keyboard vs. joystick?
 //LOG CUSTOM MESSAGES. should be accessed through some global class.
-public class LogitechControllerLogTrack : MonoBehaviour {
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class LogitechControllerLogTrack : LogTrack {
 
 	int numButtons = 20;
 	int numJoystickAxesUsed = 2; //DPAD, LEFT JOYSTICK
@@ -16,33 +15,24 @@ public class LogitechControllerLogTrack : MonoBehaviour {
 	
 	void Update(){
 		if(ExperimentSettings.isLogging){
-			Log ();
+			LogController();
 		}
 	}
-	
-	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
-	void FixedUpdate () {
-		
-	}
-	
-	public void Log(){ 
-		LogJoystick ();
-	}
-	
-	public void LogJoystick(){
+
+	public void LogController(){
 
 		float[] joystickInput = GetLogitechControllerJoystickInput ();
 		bool[] buttonInput = GetLogitechControllerButtonInput ();
 
 		for (int i = 0; i < numJoystickAxesUsed; i++) {
 			if(joystickInput[i] != 0){
-				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount (), "Joystick" + i + "," + joystickInput [i]);
+				subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount (), "Joystick" + i + separator + joystickInput [i]);
 			}
 		}
 
 		for (int i = 0; i < numButtons; i++) {
 			if(buttonInput[i] == true){
-				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount (), "Button" + i + "," + buttonInput [i]);
+				subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount (), "Button" + i + separator + buttonInput [i]);
 			}
 		}
 	}

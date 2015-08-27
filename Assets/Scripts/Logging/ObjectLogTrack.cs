@@ -1,11 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class ObjectLogTrack : MonoBehaviour, ILoggable {
-
-	//dbLog experimentLog { get { return Experiment.Instance.log; } }
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
-
+public class ObjectLogTrack : LogTrack {
 	SpawnableObject spawnedObj;
 	string nameToLog;
 
@@ -19,7 +15,6 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 
 	// Use this for initialization
 	void Start () {
-
 		//NOTE: be wary of logging objects with the same name. might be an issue for things like replaying the scene.
 		spawnedObj = GetComponent<SpawnableObject> ();
 		if (spawnedObj != null) {
@@ -53,25 +48,25 @@ public class ObjectLogTrack : MonoBehaviour, ILoggable {
 	}
 
 	void LogSpawned(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), nameToLog + "," + "SPAWNED");
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), nameToLog + separator + "SPAWNED");
 	}
 
 	void LogPosition(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), nameToLog + ",POSITION," + transform.position.x + "," + transform.position.y + "," + transform.position.z);
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), nameToLog + separator + "POSITION" + separator + transform.position.x + separator + transform.position.y + separator + transform.position.z);
 	}
 	
 	void LogRotation(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), nameToLog + ",ROTATION," + transform.rotation.eulerAngles.x + "," + transform.rotation.eulerAngles.y + "," + transform.rotation.eulerAngles.z);
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), nameToLog + separator + "ROTATION" + separator + transform.rotation.eulerAngles.x + separator + transform.rotation.eulerAngles.y + separator + transform.rotation.eulerAngles.z);
 	}
 	
 	void LogVisibility(){
 		if (spawnedObj != null) {
-			experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), nameToLog + ",VISIBILITY," + spawnedObj.isVisible);
+			subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), nameToLog + separator + "VISIBILITY" + separator + spawnedObj.isVisible);
 		}
 	}
 
 	void LogDestroy(){
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), nameToLog + ",DESTROYED");
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), nameToLog + separator + "DESTROYED");
 	}
 
 	void OnDestroy(){

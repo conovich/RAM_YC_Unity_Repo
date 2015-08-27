@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class KeyboardLogTrack : MonoBehaviour, ILoggable {
-
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class KeyboardLogTrack : LogTrack {
 
 	public string[] Keys;
 
@@ -14,17 +12,8 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 
 	void Update(){
 		if(ExperimentSettings.isLogging){
-			Log ();
+			LogKeyboard();
 		}
-	}
-
-	// LOGGING SHOULD BE INDEPENDENT OF FRAME RATE
-	void FixedUpdate () {
-
-	}
-
-	public void Log(){
-		LogKeyboard ();
 	}
 
 	void LogKeyboard(){
@@ -32,7 +21,7 @@ public class KeyboardLogTrack : MonoBehaviour, ILoggable {
 		for (int i = 0; i < Keys.Length; i++) {
 			keyName = Keys[i];
 			if (Input.GetKey (keyName.ToLower())) {
-				experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), "Keyboard," + keyName);
+				subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), "Keyboard" + separator + keyName);
 			}
 		}
 	}

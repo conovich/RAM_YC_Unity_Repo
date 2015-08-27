@@ -3,9 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 
-public class TextLogTrack : MonoBehaviour, ILoggable {
-
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class TextLogTrack : LogTrack {
 
 	Text myText;
 	string currentText = "";
@@ -21,12 +19,8 @@ public class TextLogTrack : MonoBehaviour, ILoggable {
 	void Update () {
 		if(ExperimentSettings.isLogging && ( currentText != myText.text || !firstLog) ){ //if the text has changed, log it!
 			firstLog = true;
-			Log ();
+			LogText ();
 		}
-	}
-
-	public void Log(){
-		LogText();
 	}
 
 	void LogText(){
@@ -41,7 +35,7 @@ public class TextLogTrack : MonoBehaviour, ILoggable {
 			textToLog = textToLog.Replace (System.Environment.NewLine, "_NEWLINE_");
 		}
 
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), gameObject.name + ",TEXT," + textToLog );
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), gameObject.name + ",TEXT_COLOR," + myText.color.r + "," + myText.color.g + "," + myText.color.b + "," + myText.color.a);
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), gameObject.name + separator + "TEXT" + separator + textToLog );
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), gameObject.name + separator + "TEXT_COLOR" + separator + myText.color.r + separator + myText.color.g + separator + myText.color.b + separator + myText.color.a);
 	}
 }

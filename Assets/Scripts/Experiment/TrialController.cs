@@ -191,7 +191,7 @@ public class TrialController : MonoBehaviour {
 		yield return StartCoroutine(exp.ShowSingleInstruction("The " + newObjectName + " is now hidden. " +
 		                                                      "\nYou will now drive to the " + newObjectName + " on your own." +
 		                                                      "\n" + "\nPress the button to continue, and then drive to the location of the "+ newObjectName +
-		                                                      "\nand press the button when you are in the correct location.", true, true, Config.minTestTrialInstructionTime2));
+		                                                      "and press the button when you are in the correct location.", true, true, Config.minTestTrialInstructionTime2));
 		
 		//show black text across top of screen: "press the button at the location of the OBJECT_NAME"
 		//exp.inGameInstructionsController.DisplayText("press the button at the location of the " + newObjectName);

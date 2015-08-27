@@ -169,6 +169,8 @@ public class LoggerWriter : ThreadedJob
 }
 
 public class Logger_Threading : MonoBehaviour{
+	public static string LogTextSeparator = "\t";
+
 	LoggerQueue myLoggerQueue;
 	LoggerWriter myLoggerWriter;
 
@@ -213,7 +215,7 @@ public class Logger_Threading : MonoBehaviour{
 
 	public void Log(long timeLogged, long frame, string newLogInfo){
 		if (myLoggerQueue != null) {
-			myLoggerQueue.AddToLogQueue (timeLogged + "," + frame + "," + newLogInfo);
+			myLoggerQueue.AddToLogQueue (timeLogged + LogTextSeparator + frame + LogTextSeparator + newLogInfo);
 		}
 	}
 

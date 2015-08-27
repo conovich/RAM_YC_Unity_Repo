@@ -3,9 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 
-public class UIPanelLogTrack : MonoBehaviour, ILoggable {
-	
-	Logger_Threading experimentLog { get { return Experiment.Instance.subjectLog; } }
+public class UIPanelLogTrack : LogTrack {
 
 	Image myPanelImage;
 	Color currentPanelColor;
@@ -22,17 +20,13 @@ public class UIPanelLogTrack : MonoBehaviour, ILoggable {
 	void Update () {
 		if(ExperimentSettings.isLogging && (currentPanelColor != myPanelImage.color || !firstLog) ){ //if the color has changed, or it's the first log
 			firstLog = true;
-			Log ();
+			LogPanel();
 		}
 	}
-	
-	public void Log(){
-		LogPanel();
-	}
-	
+
 	void LogPanel(){
 		currentPanelColor = myPanelImage.color;
-		experimentLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, experimentLog.GetFrameCount(), gameObject.name 
-		                 + ",PANEL," + myPanelImage.color.r + "," + myPanelImage.color.g + "," + myPanelImage.color.b + "," + myPanelImage.color.a);
+		subjectLog.Log (Experiment.Instance.theGameClock.SystemTime_Milliseconds, subjectLog.GetFrameCount(), gameObject.name 
+		                   + separator + "PANEL" + separator + myPanelImage.color.r + separator + myPanelImage.color.g + separator + myPanelImage.color.b + separator + myPanelImage.color.a);
 	}
 }
