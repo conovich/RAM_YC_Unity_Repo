@@ -69,6 +69,10 @@ public class Config : MonoBehaviour {
 
 //SPECIFIC RAM-YC VARIABLES:
 
+	public static bool isAvatarTilting = true;
+	public static float maxTiltAngle = 15.0f; //max angle to tilt
+	public static float maxAngleDifference = 5.0f; //maximum turning angle difference to use in tilt calculation --> currTiltAngle/maxTiltAngle = currentAngleDifference/maxAngleDifference
+
 	public static bool isOneObjectVersion;
 
 	//autodrive variables

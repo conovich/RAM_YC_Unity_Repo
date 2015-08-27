@@ -190,9 +190,11 @@ public class AvatarControls : MonoBehaviour{
 	}
 */
 
+	public Transform TiltableTransform;
 
+	float RotationSpeed = 0.75f;
+	Quaternion lastRotation;
 
-	float RotationSpeed = 1;
 
 
 	// Use this for initialization
@@ -204,14 +206,22 @@ public class AvatarControls : MonoBehaviour{
 		else{
 			GetComponent<Collider>().enabled = true;
 		}
+		lastRotation = transform.rotation;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
 		if (exp.currentState == Experiment.ExperimentState.inExperiment) {
 			if(!ShouldLockControls){
 				GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY; // TODO: on collision, don't allow a change in angular velocity?
-				
+
+				if (Config.isAvatarTilting) {
+					SetTilt ();
+					lastRotation = transform.rotation;
+				}
+
+				//sets velocities
 				GetInput ();
 			}
 			else{
@@ -222,6 +232,24 @@ public class AvatarControls : MonoBehaviour{
 
 	void FixedUpdate(){
 
+	}
+	
+	//based on amount difference of y rotation, tilt in z axis
+	void SetTilt(){
+		float rotationDifference = transform.rotation.eulerAngles.y - lastRotation.eulerAngles.y;
+
+		if (rotationDifference != 0) {
+			int a = 0;
+		}
+
+		float percentTilt = rotationDifference / Config.maxAngleDifference;
+		float tiltAngle = percentTilt * Config.maxTiltAngle;
+		if (percentTilt > 1.0f) {
+			tiltAngle = Config.maxTiltAngle;
+		}
+
+		tiltAngle *= -1; //tilt in opposite direction of the difference
+		TiltableTransform.rotation = Quaternion.Euler (transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, tiltAngle);
 	}
 
 	void GetInput()
@@ -241,7 +269,9 @@ public class AvatarControls : MonoBehaviour{
 		float horizontalAxisInput = Input.GetAxis ("Horizontal");
 		if (Mathf.Abs (horizontalAxisInput) > 0.0f) { //EPSILON should be accounted for in Input Settings "dead zone" parameter
 
-			GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
+			//GetComponent<Rigidbody> ().angularVelocity = Vector3.up * horizontalAxisInput * RotationSpeed;
+			float percent = horizontalAxisInput / 1.0f;
+			Turn (percent * RotationSpeed);
 			//Debug.Log("horizontal axis ANG VEL = " + GetComponent<Rigidbody>().angularVelocity);
 		}
 		else {
@@ -275,16 +305,29 @@ public class AvatarControls : MonoBehaviour{
 		float rotateRate = 1.0f / Config.spinTime;
 		float tElapsed = 0.0f;
 		float rotationEpsilon = 0.01f;
-		Quaternion origRot = transform.rotation;
+		bool hasSetTilt = false;
 		while (Mathf.Abs(transform.rotation.eulerAngles.y - desiredRotation.eulerAngles.y) >= rotationEpsilon){
+
+			lastRotation = transform.rotation; //set last rotation before rotating!
 
 			tElapsed += (Time.deltaTime * rotateRate);
 			ELAPSEDTIME += Time.deltaTime;
 			//will spherically interpolate the rotation for config.spinTime seconds
-			transform.rotation = Quaternion.Slerp(origRot, desiredRotation, tElapsed); //SLERP ALWAYS TAKES THE SHORTEST PATH.
+			transform.rotation = Quaternion.Slerp(origRotation, desiredRotation, tElapsed); //SLERP ALWAYS TAKES THE SHORTEST PATH.
+
+			if(!hasSetTilt && Config.isAvatarTilting){
+				SetTilt(); //should be a constant speed - only set this once
+				hasSetTilt = true;
+			}
 
 			yield return 0;
 		}
+
+		//set tilt back to zero
+		lastRotation = transform.rotation;
+		SetTilt ();
+
+
 		transform.rotation = desiredRotation;
 
 		Debug.Log ("TIME ELAPSED WHILE ROTATING: " + ELAPSEDTIME);
